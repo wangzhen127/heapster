@@ -105,6 +105,10 @@ var (
 		Key:         "accelerator_id",
 		Description: "ID of the accelerator",
 	}
+	LabelDeviceName = LabelDescriptor{
+		Key:         "device_name",
+		Description: "The name of the device.",
+	}
 )
 
 type LabelDescriptor struct {
@@ -164,6 +168,10 @@ var gcmNodeAutoscalingLabels = []LabelDescriptor{
 	LabelGCEResourceID,
 	LabelGCEResourceType,
 	LabelHostname,
+}
+
+var diskLabels = []LabelDescriptor{
+	LabelDeviceName,
 }
 
 func CommonLabels() []LabelDescriptor {

@@ -15,7 +15,6 @@
 package core
 
 import (
-	"fmt"
 	"time"
 
 	cadvisor "github.com/google/cadvisor/info/v1"
@@ -24,6 +23,7 @@ import (
 
 const (
 	CustomMetricPrefix = "custom/"
+	DevSda             = "/dev/sda"
 )
 
 // Provided by Kubelet/cadvisor.
@@ -1008,7 +1008,7 @@ var MetricDiskIORead = Metric{
 		Type:        MetricCumulative,
 		ValueType:   ValueInt64,
 		Units:       UnitsBytes,
-		Labels:      metricLabels,
+		Labels:      diskLabels,
 	},
 	HasLabeledMetric: func(spec *cadvisor.ContainerSpec, stat *cadvisor.ContainerStats) bool {
 		return spec.HasDiskIo
@@ -1016,9 +1016,9 @@ var MetricDiskIORead = Metric{
 	GetLabeledMetric: func(spec *cadvisor.ContainerSpec, stat *cadvisor.ContainerStats) []LabeledMetric {
 		result := make([]LabeledMetric, 0, len(stat.DiskIo.IoServiceBytes))
 		for _, ioServiceBytesPerPartition := range stat.DiskIo.IoServiceBytes {
-			resourceIDKey := ioServiceBytesPerPartition.Device
-			if resourceIDKey == "" {
-				resourceIDKey = fmt.Sprintf("%d:%d", ioServiceBytesPerPartition.Major, ioServiceBytesPerPartition.Minor)
+			device := ioServiceBytesPerPartition.Device
+			if device != DevSda {
+				continue
 			}
 
 			var value uint64
@@ -1029,7 +1029,7 @@ var MetricDiskIORead = Metric{
 			result = append(result, LabeledMetric{
 				Name: "disk/io_read_bytes",
 				Labels: map[string]string{
-					LabelResourceID.Key: resourceIDKey,
+					LabelDeviceName.Key: device,
 				},
 				MetricValue: MetricValue{
 					ValueType:  ValueInt64,
@@ -1049,7 +1049,7 @@ var MetricDiskIOWrite = Metric{
 		Type:        MetricCumulative,
 		ValueType:   ValueInt64,
 		Units:       UnitsBytes,
-		Labels:      metricLabels,
+		Labels:      diskLabels,
 	},
 	HasLabeledMetric: func(spec *cadvisor.ContainerSpec, stat *cadvisor.ContainerStats) bool {
 		return spec.HasDiskIo
@@ -1057,9 +1057,9 @@ var MetricDiskIOWrite = Metric{
 	GetLabeledMetric: func(spec *cadvisor.ContainerSpec, stat *cadvisor.ContainerStats) []LabeledMetric {
 		result := make([]LabeledMetric, 0, len(stat.DiskIo.IoServiceBytes))
 		for _, ioServiceBytesPerPartition := range stat.DiskIo.IoServiceBytes {
-			resourceIDKey := ioServiceBytesPerPartition.Device
-			if resourceIDKey == "" {
-				resourceIDKey = fmt.Sprintf("%d:%d", ioServiceBytesPerPartition.Major, ioServiceBytesPerPartition.Minor)
+			device := ioServiceBytesPerPartition.Device
+			if device != DevSda {
+				continue
 			}
 
 			var value uint64
@@ -1070,7 +1070,7 @@ var MetricDiskIOWrite = Metric{
 			result = append(result, LabeledMetric{
 				Name: "disk/io_write_bytes",
 				Labels: map[string]string{
-					LabelResourceID.Key: resourceIDKey,
+					LabelDeviceName.Key: device,
 				},
 				MetricValue: MetricValue{
 					ValueType:  ValueInt64,

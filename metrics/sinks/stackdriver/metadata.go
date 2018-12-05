@@ -81,6 +81,18 @@ var (
 		Name:       "kubernetes.io/container/ephemeral_storage/limit_bytes",
 	}
 
+	ephemeralstorageContainerReadBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/container/ephemeral_storage/read_bytes_count",
+	}
+
+	ephemeralstorageContainerWriteBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/container/ephemeral_storage/write_bytes_count",
+	}
+
 	acceleratorMemoryTotalMD = &metricMetadata{
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
@@ -193,6 +205,18 @@ var (
 		Name:       "kubernetes.io/node/ephemeral_storage/allocatable_bytes",
 	}
 
+	ephemeralstorageNodeReadBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/ephemeral_storage/read_bytes_count",
+	}
+
+	ephemeralstorageNodeWriteBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/ephemeral_storage/write_bytes_count",
+	}
+
 	ephemeralstorageInodesTotalMD = &metricMetadata{
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
@@ -289,6 +313,18 @@ var (
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
 		Name:       "container.googleapis.com/container/disk/bytes_total",
+	}
+
+	legacyDiskReadBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "container.googleapis.com/container/disk/read_bytes_count",
+	}
+
+	legacyDiskWriteBytesCountMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "container.googleapis.com/container/disk/write_bytes_count",
 	}
 
 	legacyDiskInodesTotalMD = &metricMetadata{

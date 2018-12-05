@@ -523,6 +523,22 @@ func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, l
 			"device_name": metric.Labels[core.LabelResourceID.Key],
 		}
 		return ts
+	case core.MetricDiskIORead.MetricDescriptor.Name:
+		glog.Infof("legacy disk io read: %d", metric.IntValue)
+		point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyDiskReadBytesCountMD, point)
+		ts.Metric.Labels = map[string]string{
+			core.LabelDeviceName.Key: metric.Labels[core.LabelDeviceName.Key],
+		}
+		return ts
+	case core.MetricDiskIOWrite.MetricDescriptor.Name:
+		glog.Infof("legacy disk io write: %d", metric.IntValue)
+		point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyDiskWriteBytesCountMD, point)
+		ts.Metric.Labels = map[string]string{
+			core.LabelDeviceName.Key: metric.Labels[core.LabelDeviceName.Key],
+		}
+		return ts
 	case core.MetricAcceleratorMemoryTotal.MetricDescriptor.Name:
 		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
 		ts := legacyCreateTimeSeries(resourceLabels, legacyAcceleratorMemoryTotalMD, point)
@@ -677,6 +693,16 @@ func (sink *StackdriverSink) TranslateLabeledMetric(timestamp time.Time, labels 
 				core.LabelAcceleratorID.Key:    metric.Labels[core.LabelAcceleratorID.Key],
 			}
 			return ts
+		case core.MetricDiskIORead.MetricDescriptor.Name:
+			glog.Infof("pod disk io read: %d", metric.IntValue)
+			point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+			ts := createTimeSeries("k8s_container", containerLabels, ephemeralstorageContainerReadBytesCountMD, point)
+			return ts
+		case core.MetricDiskIOWrite.MetricDescriptor.Name:
+			glog.Infof("pod disk io write: %d", metric.IntValue)
+			point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+			ts := createTimeSeries("k8s_container", containerLabels, ephemeralstorageContainerWriteBytesCountMD, point)
+			return ts
 		}
 	case core.MetricSetTypeNode:
 		nodeLabels := sink.getNodeResourceLabels(labels)
@@ -688,6 +714,16 @@ func (sink *StackdriverSink) TranslateLabeledMetric(timestamp time.Time, labels 
 		case core.MetricFilesystemInodesFree.MetricDescriptor.Name:
 			point := sink.intPoint(timestamp, timestamp, metric.IntValue)
 			ts := createTimeSeries("k8s_node", nodeLabels, ephemeralstorageInodesFreeMD, point)
+			return ts
+		case core.MetricDiskIORead.MetricDescriptor.Name:
+			glog.Infof("node disk io read: %d", metric.IntValue)
+			point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+			ts := createTimeSeries("k8s_node", nodeLabels, ephemeralstorageNodeReadBytesCountMD, point)
+			return ts
+		case core.MetricDiskIOWrite.MetricDescriptor.Name:
+			glog.Infof("node disk io write: %d", metric.IntValue)
+			point := sink.intPoint(timestamp, collectionStartTime, metric.IntValue)
+			ts := createTimeSeries("k8s_node", nodeLabels, ephemeralstorageNodeWriteBytesCountMD, point)
 			return ts
 		}
 	}
