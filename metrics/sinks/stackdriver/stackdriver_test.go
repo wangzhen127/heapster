@@ -240,7 +240,7 @@ func TestTranslateFilesystemUsage(t *testing.T) {
 	timestamp := time.Now()
 	collectionStartTime := timestamp.Add(-time.Second)
 
-	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, collectionStartTime)
+	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, collectionStartTime, core.MetricSetTypePod)
 
 	as := assert.New(t)
 	as.Equal(ts.Metric.Type, "container.googleapis.com/container/disk/bytes_used")
@@ -259,7 +259,7 @@ func TestTranslateFilesystemLimit(t *testing.T) {
 	timestamp := time.Now()
 	collectionStartTime := timestamp.Add(-time.Second)
 
-	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, collectionStartTime)
+	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, collectionStartTime, core.MetricSetTypePod)
 
 	as := assert.New(t)
 	as.Equal(ts.Metric.Type, "container.googleapis.com/container/disk/bytes_total")
@@ -285,7 +285,7 @@ func testTranslateAcceleratorMetric(t *testing.T, sourceName string, stackdriver
 	timestamp := time.Now()
 	createTime := timestamp.Add(-time.Second)
 
-	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, createTime)
+	ts := sink.LegacyTranslateLabeledMetric(timestamp, commonLabels, metric, createTime, core.MetricSetTypePodContainer)
 
 	as := assert.New(t)
 	as.Equal(stackdriverName, ts.Metric.Type)

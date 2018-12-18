@@ -170,7 +170,7 @@ func (sink *StackdriverSink) ExportData(dataBatch *core.DataBatch) {
 
 		for _, metric := range metricSet.LabeledMetrics {
 			if sink.useOldResourceModel {
-				if point := sink.LegacyTranslateLabeledMetric(dataBatch.Timestamp, metricSet.Labels, metric, metricSet.CollectionStartTime); point != nil {
+				if point := sink.LegacyTranslateLabeledMetric(dataBatch.Timestamp, metricSet.Labels, metric, metricSet.CollectionStartTime, metricSet.Labels["type"]); point != nil {
 					req.TimeSeries = append(req.TimeSeries, point)
 				}
 
@@ -486,7 +486,7 @@ func (sink *StackdriverSink) computeDerivedMetrics(metricSet *core.MetricSet) *c
 	return newMetricSet
 }
 
-func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, labels map[string]string, metric core.LabeledMetric, collectionStartTime time.Time) *monitoringpb.TimeSeries {
+func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, labels map[string]string, metric core.LabeledMetric, collectionStartTime time.Time, metricSetType string) *monitoringpb.TimeSeries {
 	resourceLabels := sink.legacyGetResourceLabels(labels)
 	switch metric.Name {
 	case core.MetricFilesystemUsage.MetricDescriptor.Name:
@@ -499,6 +499,26 @@ func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, l
 	case core.MetricFilesystemLimit.MetricDescriptor.Name:
 		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
 		ts := legacyCreateTimeSeries(resourceLabels, legacyDiskBytesTotalMD, point)
+		ts.Metric.Labels = map[string]string{
+			"device_name": metric.Labels[core.LabelResourceID.Key],
+		}
+		return ts
+	case core.MetricFilesystemInodes.MetricDescriptor.Name:
+		if metricSetType != core.MetricSetTypeNode {
+			return nil
+		}
+		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyNodeInodesMD, point)
+		ts.Metric.Labels = map[string]string{
+			"device_name": metric.Labels[core.LabelResourceID.Key],
+		}
+		return ts
+	case core.MetricFilesystemInodesFree.MetricDescriptor.Name:
+		if metricSetType != core.MetricSetTypeNode {
+			return nil
+		}
+		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyNodeInodesFreeMD, point)
 		ts.Metric.Labels = map[string]string{
 			"device_name": metric.Labels[core.LabelResourceID.Key],
 		}
