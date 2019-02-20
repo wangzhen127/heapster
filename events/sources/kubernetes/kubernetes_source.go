@@ -26,8 +26,8 @@ import (
 	kubewatch "k8s.io/apimachinery/pkg/watch"
 	kubeclient "k8s.io/client-go/kubernetes"
 	kubev1core "k8s.io/client-go/kubernetes/typed/core/v1"
-	kubeconfig "k8s.io/heapster/common/kubernetes"
-	"k8s.io/heapster/events/core"
+	kubeconfig "github.com/Stackdriver/heapster/common/kubernetes"
+	"github.com/Stackdriver/heapster/events/core"
 )
 
 const (

@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	. "k8s.io/heapster/metrics/core"
+	. "github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/golang/glog"
 	cadvisor "github.com/google/cadvisor/info/v1"
@@ -32,7 +32,7 @@ import (
 	kube_client "k8s.io/client-go/kubernetes"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/heapster/metrics/util"
+	"github.com/Stackdriver/heapster/metrics/util"
 )
 
 const (

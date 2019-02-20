@@ -20,9 +20,9 @@ import (
 	restful "github.com/emicklei/go-restful"
 	"github.com/golang/glog"
 
-	"k8s.io/heapster/metrics/api/v1/types"
-	"k8s.io/heapster/metrics/core"
-	metricsink "k8s.io/heapster/metrics/sinks/metric"
+	"github.com/Stackdriver/heapster/metrics/api/v1/types"
+	"github.com/Stackdriver/heapster/metrics/core"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 )
 
 type Api struct {

@@ -20,8 +20,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/riemann/riemann-go-client"
-	riemannCommon "k8s.io/heapster/common/riemann"
-	"k8s.io/heapster/metrics/core"
+	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 // contains the riemann client, the riemann configuration, and a RWMutex

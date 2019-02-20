@@ -25,7 +25,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/hawkular/hawkular-client-go/metrics"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 // cacheDefinitions Fetches all known definitions from all tenants (all projects in Openshift)

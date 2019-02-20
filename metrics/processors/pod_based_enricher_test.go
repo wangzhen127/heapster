@@ -20,8 +20,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"k8s.io/heapster/metrics/core"
-	"k8s.io/heapster/metrics/util"
+	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/util"
 
 	kube_api "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"

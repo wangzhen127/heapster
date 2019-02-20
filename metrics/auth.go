@@ -24,7 +24,7 @@ import (
 	"k8s.io/apiserver/pkg/authentication/authenticator"
 	x509request "k8s.io/apiserver/pkg/authentication/request/x509"
 	"k8s.io/apiserver/pkg/authentication/user"
-	"k8s.io/heapster/metrics/options"
+	"github.com/Stackdriver/heapster/metrics/options"
 )
 
 func newAuthHandler(opt *options.HeapsterRunOptions, handler http.Handler) (http.Handler, error) {

@@ -21,9 +21,9 @@ import (
 
 	"github.com/golang/glog"
 	kube_api "k8s.io/api/core/v1"
-	esCommon "k8s.io/heapster/common/elasticsearch"
-	event_core "k8s.io/heapster/events/core"
-	"k8s.io/heapster/metrics/core"
+	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
+	event_core "github.com/Stackdriver/heapster/events/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

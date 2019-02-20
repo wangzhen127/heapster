@@ -23,8 +23,8 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"k8s.io/heapster/metrics/options"
-	metricsink "k8s.io/heapster/metrics/sinks/metric"
+	"github.com/Stackdriver/heapster/metrics/options"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 )
 

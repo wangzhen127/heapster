@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 func TestNodeAggregate(t *testing.T) {

@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 var (

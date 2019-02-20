@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"k8s.io/heapster/version"
+	"github.com/Stackdriver/heapster/version"
 
 	influxdb "github.com/influxdata/influxdb/client"
 )

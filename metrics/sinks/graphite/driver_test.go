@@ -17,7 +17,7 @@ package graphite
 import (
 	"testing"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/stretchr/testify/assert"
 )

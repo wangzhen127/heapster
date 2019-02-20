@@ -20,8 +20,8 @@ import (
 
 	"github.com/golang/glog"
 	kube_client "k8s.io/client-go/rest"
-	kube_config "k8s.io/heapster/common/kubernetes"
-	kubelet_client "k8s.io/heapster/metrics/sources/kubelet/util"
+	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
+	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
 )
 
 const (

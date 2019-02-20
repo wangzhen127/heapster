@@ -23,9 +23,9 @@ import (
 	"time"
 
 	kube_api "k8s.io/api/core/v1"
-	influxdb_common "k8s.io/heapster/common/influxdb"
-	"k8s.io/heapster/events/core"
-	metrics_core "k8s.io/heapster/metrics/core"
+	influxdb_common "github.com/Stackdriver/heapster/common/influxdb"
+	"github.com/Stackdriver/heapster/events/core"
+	metrics_core "github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/golang/glog"
 	influxdb "github.com/influxdata/influxdb/client"

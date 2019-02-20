@@ -25,12 +25,12 @@ import (
 	cadvisor "github.com/google/cadvisor/info/v1"
 	"github.com/stretchr/testify/assert"
 
-	"k8s.io/heapster/metrics/manager"
-	model_api "k8s.io/heapster/metrics/model"
-	"k8s.io/heapster/metrics/sinks"
-	sink_api "k8s.io/heapster/metrics/sinks/api"
-	"k8s.io/heapster/metrics/sinks/cache"
-	source_api "k8s.io/heapster/metrics/sources/api"
+	"github.com/Stackdriver/heapster/metrics/manager"
+	model_api "github.com/Stackdriver/heapster/metrics/model"
+	"github.com/Stackdriver/heapster/metrics/sinks"
+	sink_api "github.com/Stackdriver/heapster/metrics/sinks/api"
+	"github.com/Stackdriver/heapster/metrics/sinks/cache"
+	source_api "github.com/Stackdriver/heapster/metrics/sources/api"
 )
 
 type testSource struct {

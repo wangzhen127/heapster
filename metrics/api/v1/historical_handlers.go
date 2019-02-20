@@ -23,9 +23,9 @@ import (
 
 	restful "github.com/emicklei/go-restful"
 
-	"k8s.io/heapster/metrics/api/v1/types"
-	"k8s.io/heapster/metrics/core"
-	"k8s.io/heapster/metrics/util/metrics"
+	"github.com/Stackdriver/heapster/metrics/api/v1/types"
+	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/util/metrics"
 )
 
 // HistoricalApi wraps the standard API to overload the fetchers to use the

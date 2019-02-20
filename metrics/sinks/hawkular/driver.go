@@ -29,7 +29,7 @@ import (
 
 	kube_client "k8s.io/client-go/rest"
 	kubeClientCmd "k8s.io/client-go/tools/clientcmd"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

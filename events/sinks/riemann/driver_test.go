@@ -24,8 +24,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	riemannCommon "k8s.io/heapster/common/riemann"
-	"k8s.io/heapster/events/core"
+	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
+	"github.com/Stackdriver/heapster/events/core"
 )
 
 type fakeRiemannClient struct {

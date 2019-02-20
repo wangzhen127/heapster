@@ -27,8 +27,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	restful "github.com/emicklei/go-restful"
-	"k8s.io/heapster/metrics/api/v1/types"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/api/v1/types"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type metricReq struct {

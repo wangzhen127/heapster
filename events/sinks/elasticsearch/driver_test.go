@@ -23,8 +23,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	esCommon "k8s.io/heapster/common/elasticsearch"
-	"k8s.io/heapster/events/core"
+	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
+	"github.com/Stackdriver/heapster/events/core"
 )
 
 type dataSavedToES struct {

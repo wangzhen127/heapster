@@ -20,11 +20,11 @@ import (
 	"strings"
 
 	restful "github.com/emicklei/go-restful"
-	"k8s.io/heapster/metrics/api/v1"
-	metricsApi "k8s.io/heapster/metrics/apis/metrics"
-	"k8s.io/heapster/metrics/core"
-	metricsink "k8s.io/heapster/metrics/sinks/metric"
-	"k8s.io/heapster/metrics/util/metrics"
+	"github.com/Stackdriver/heapster/metrics/api/v1"
+	metricsApi "github.com/Stackdriver/heapster/metrics/apis/metrics"
+	"github.com/Stackdriver/heapster/metrics/core"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
+	"github.com/Stackdriver/heapster/metrics/util/metrics"
 
 	v1listers "k8s.io/client-go/listers/core/v1"
 )

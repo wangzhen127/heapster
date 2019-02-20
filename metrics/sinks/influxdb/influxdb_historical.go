@@ -22,7 +22,7 @@ import (
 	"time"
 	"unicode"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/golang/glog"
 	influxdb "github.com/influxdata/influxdb/client"

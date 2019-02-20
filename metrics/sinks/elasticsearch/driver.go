@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	esCommon "k8s.io/heapster/common/elasticsearch"
-	"k8s.io/heapster/metrics/core"
+	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
+	"github.com/Stackdriver/heapster/metrics/core"
 	"reflect"
 )
 

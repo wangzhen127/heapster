@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	honeycomb_common "k8s.io/heapster/common/honeycomb"
-	"k8s.io/heapster/metrics/core"
+	honeycomb_common "github.com/Stackdriver/heapster/common/honeycomb"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type fakeHoneycombDataSink struct {

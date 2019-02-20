@@ -29,12 +29,12 @@ import (
 
 	"github.com/golang/glog"
 	"k8s.io/apiserver/pkg/util/logs"
-	"k8s.io/heapster/common/flags"
-	"k8s.io/heapster/events/api"
-	"k8s.io/heapster/events/manager"
-	"k8s.io/heapster/events/sinks"
-	"k8s.io/heapster/events/sources"
-	"k8s.io/heapster/version"
+	"github.com/Stackdriver/heapster/common/flags"
+	"github.com/Stackdriver/heapster/events/api"
+	"github.com/Stackdriver/heapster/events/manager"
+	"github.com/Stackdriver/heapster/events/sinks"
+	"github.com/Stackdriver/heapster/events/sources"
+	"github.com/Stackdriver/heapster/version"
 )
 
 var (

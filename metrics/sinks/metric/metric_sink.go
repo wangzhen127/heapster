@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 // A simple in-memory storage for metrics. It divides metrics into 2 categories

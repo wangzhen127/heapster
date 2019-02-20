@@ -20,7 +20,7 @@ import (
 	"sort"
 
 	"github.com/golang/glog"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type LogSink struct {

@@ -16,7 +16,7 @@ package statsd
 
 import (
 	"fmt"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 	"strings"
 	"unicode"
 )

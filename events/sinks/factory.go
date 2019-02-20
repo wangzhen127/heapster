@@ -17,15 +17,15 @@ package sinks
 import (
 	"fmt"
 
-	"k8s.io/heapster/common/flags"
-	"k8s.io/heapster/events/core"
-	"k8s.io/heapster/events/sinks/elasticsearch"
-	"k8s.io/heapster/events/sinks/gcl"
-	"k8s.io/heapster/events/sinks/honeycomb"
-	"k8s.io/heapster/events/sinks/influxdb"
-	"k8s.io/heapster/events/sinks/kafka"
-	"k8s.io/heapster/events/sinks/log"
-	"k8s.io/heapster/events/sinks/riemann"
+	"github.com/Stackdriver/heapster/common/flags"
+	"github.com/Stackdriver/heapster/events/core"
+	"github.com/Stackdriver/heapster/events/sinks/elasticsearch"
+	"github.com/Stackdriver/heapster/events/sinks/gcl"
+	"github.com/Stackdriver/heapster/events/sinks/honeycomb"
+	"github.com/Stackdriver/heapster/events/sinks/influxdb"
+	"github.com/Stackdriver/heapster/events/sinks/kafka"
+	"github.com/Stackdriver/heapster/events/sinks/log"
+	"github.com/Stackdriver/heapster/events/sinks/riemann"
 
 	"github.com/golang/glog"
 )

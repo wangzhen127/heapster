@@ -34,8 +34,8 @@ import (
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	grpc_codes "google.golang.org/grpc/codes"
 	grpc_status "google.golang.org/grpc/status"
-	gce_util "k8s.io/heapster/common/gce"
-	"k8s.io/heapster/metrics/core"
+	gce_util "github.com/Stackdriver/heapster/common/gce"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

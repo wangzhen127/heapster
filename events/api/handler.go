@@ -22,7 +22,7 @@ import (
 
 	"github.com/golang/glog"
 	"k8s.io/apiserver/pkg/server/healthz"
-	"k8s.io/heapster/events/manager"
+	"github.com/Stackdriver/heapster/events/manager"
 )
 
 const (

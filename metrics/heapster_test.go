@@ -28,9 +28,9 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"k8s.io/heapster/metrics/cmd/heapster-apiserver/app"
-	"k8s.io/heapster/metrics/options"
-	metricsink "k8s.io/heapster/metrics/sinks/metric"
+	"github.com/Stackdriver/heapster/metrics/cmd/heapster-apiserver/app"
+	"github.com/Stackdriver/heapster/metrics/options"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	metrics "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 

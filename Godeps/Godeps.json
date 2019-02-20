@@ -1,5 +1,5 @@
 {
-	"ImportPath": "k8s.io/heapster",
+	"ImportPath": "github.com/Stackdriver/heapster",
 	"GoVersion": "go1.9",
 	"GodepVersion": "v79",
 	"Packages": [

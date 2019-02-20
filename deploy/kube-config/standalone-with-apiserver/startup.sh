@@ -34,7 +34,7 @@
 
 # set these to the roots of kubernetes and heapster repos
 KUBE_ROOT=$HOME/go/src/k8s.io/kubernetes
-HEAPSTER_ROOT=$HOME/go/src/k8s.io/heapster
+HEAPSTER_ROOT=$HOME/go/src/github.com/Stackdriver/heapster
 
 HEAPSTER_NAMESPACE=${HEAPSTER_NAMESPACE:-"kube-system"}
 HEAPSTER_DEPLOYMENT_NAME=${HEAPSTER_DEPLOYMENT_NAME:-"heapster-apiserver"}

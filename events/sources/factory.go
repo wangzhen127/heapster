@@ -19,9 +19,9 @@ import (
 
 	"github.com/golang/glog"
 
-	"k8s.io/heapster/common/flags"
-	"k8s.io/heapster/events/core"
-	kube "k8s.io/heapster/events/sources/kubernetes"
+	"github.com/Stackdriver/heapster/common/flags"
+	"github.com/Stackdriver/heapster/events/core"
+	kube "github.com/Stackdriver/heapster/events/sources/kubernetes"
 )
 
 type SourceFactory struct {

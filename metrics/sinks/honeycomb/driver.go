@@ -19,8 +19,8 @@ import (
 	"sync"
 
 	"github.com/golang/glog"
-	honeycomb_common "k8s.io/heapster/common/honeycomb"
-	"k8s.io/heapster/metrics/core"
+	honeycomb_common "github.com/Stackdriver/heapster/common/honeycomb"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 // These metrics report cumulative values over the lifetime of the process.

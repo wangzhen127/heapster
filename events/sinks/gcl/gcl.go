@@ -20,8 +20,8 @@ import (
 	"net/url"
 	"time"
 
-	gce_util "k8s.io/heapster/common/gce"
-	"k8s.io/heapster/events/core"
+	gce_util "github.com/Stackdriver/heapster/common/gce"
+	"github.com/Stackdriver/heapster/events/core"
 
 	"github.com/golang/glog"
 	"golang.org/x/oauth2"

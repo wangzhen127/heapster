@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	kafka_common "k8s.io/heapster/common/kafka"
-	"k8s.io/heapster/metrics/core"
+	kafka_common "github.com/Stackdriver/heapster/common/kafka"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type KafkaSinkPoint struct {

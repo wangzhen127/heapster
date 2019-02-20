@@ -22,9 +22,9 @@ import (
 
 	"github.com/golang/glog"
 	kube_api "k8s.io/api/core/v1"
-	kafka_common "k8s.io/heapster/common/kafka"
-	event_core "k8s.io/heapster/events/core"
-	"k8s.io/heapster/metrics/core"
+	kafka_common "github.com/Stackdriver/heapster/common/kafka"
+	event_core "github.com/Stackdriver/heapster/events/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type KafkaSinkPoint struct {

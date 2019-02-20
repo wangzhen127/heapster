@@ -16,7 +16,7 @@ package util
 
 import (
 	"fmt"
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 	"sort"
 	"strings"
 )

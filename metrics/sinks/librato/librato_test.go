@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	librato_common "k8s.io/heapster/common/librato"
-	"k8s.io/heapster/metrics/core"
+	librato_common "github.com/Stackdriver/heapster/common/librato"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type fakeLibratoDataSink struct {

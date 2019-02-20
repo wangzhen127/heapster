@@ -19,7 +19,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
-	"k8s.io/heapster/events/core"
+	"github.com/Stackdriver/heapster/events/core"
 )
 
 var (

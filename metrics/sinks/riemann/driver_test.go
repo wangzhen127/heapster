@@ -22,8 +22,8 @@ import (
 	"github.com/riemann/riemann-go-client"
 	"github.com/riemann/riemann-go-client/proto"
 	"github.com/stretchr/testify/assert"
-	riemannCommon "k8s.io/heapster/common/riemann"
-	"k8s.io/heapster/metrics/core"
+	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
+	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type fakeRiemannClient struct {

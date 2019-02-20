@@ -37,14 +37,14 @@ endif
 SUPPORTED_KUBE_VERSIONS=1.9.3
 TEST_NAMESPACE=heapster-e2e-tests
 
-HEAPSTER_LDFLAGS=-w -X k8s.io/heapster/version.HeapsterVersion=$(VERSION) -X k8s.io/heapster/version.GitCommit=$(GIT_COMMIT)
+HEAPSTER_LDFLAGS=-w -X github.com/Stackdriver/heapster/version.HeapsterVersion=$(VERSION) -X github.com/Stackdriver/heapster/version.GitCommit=$(GIT_COMMIT)
 
 fmt:
 	find . -type f -name "*.go" | grep -v "./vendor*" | xargs gofmt -s -w
 
 build: clean fmt
-	GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(HEAPSTER_LDFLAGS)" -o heapster k8s.io/heapster/metrics
-	GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(HEAPSTER_LDFLAGS)" -o eventer k8s.io/heapster/events
+	GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(HEAPSTER_LDFLAGS)" -o heapster github.com/Stackdriver/heapster/metrics
+	GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(HEAPSTER_LDFLAGS)" -o eventer github.com/Stackdriver/heapster/events
 
 sanitize:
 	hooks/check_boilerplate.sh
@@ -67,10 +67,10 @@ test-integration: clean build
 container:
 	# Run the build in a container in order to have reproducible builds
 	# Also, fetch the latest ca certificates
-	docker run --rm -i $(TTY) -v $(TEMP_DIR):/build -v $(REPO_DIR):/go/src/k8s.io/heapster -w /go/src/k8s.io/heapster golang:$(GOLANG_VERSION) /bin/bash -c "\
+	docker run --rm -i $(TTY) -v $(TEMP_DIR):/build -v $(REPO_DIR):/go/src/github.com/Stackdriver/heapster -w /go/src/github.com/Stackdriver/heapster golang:$(GOLANG_VERSION) /bin/bash -c "\
 		cp /etc/ssl/certs/ca-certificates.crt /build \
-		&& GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags \"$(HEAPSTER_LDFLAGS)\" -o /build/heapster k8s.io/heapster/metrics \
-		&& GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags \"$(HEAPSTER_LDFLAGS)\" -o /build/eventer k8s.io/heapster/events"
+		&& GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags \"$(HEAPSTER_LDFLAGS)\" -o /build/heapster github.com/Stackdriver/heapster/metrics \
+		&& GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags \"$(HEAPSTER_LDFLAGS)\" -o /build/eventer github.com/Stackdriver/heapster/events"
 
 	cp deploy/docker/Dockerfile $(TEMP_DIR)
 	docker build --pull -t $(PREFIX)/heapster-$(ARCH):$(VERSION) $(TEMP_DIR)

@@ -22,7 +22,7 @@ import (
 	"strings"
 	"sync"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/golang/glog"
 	"github.com/marpaia/graphite-golang"

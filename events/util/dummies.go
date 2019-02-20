@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"k8s.io/heapster/events/core"
+	"github.com/Stackdriver/heapster/events/core"
 )
 
 type DummySink struct {

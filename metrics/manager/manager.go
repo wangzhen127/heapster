@@ -17,7 +17,7 @@ package manager
 import (
 	"time"
 
-	"k8s.io/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
