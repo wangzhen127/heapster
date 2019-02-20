@@ -22,6 +22,7 @@ import (
 	. "github.com/Stackdriver/heapster/metrics/core"
 	"github.com/Stackdriver/heapster/metrics/sources/kubelet"
 
+	"github.com/Stackdriver/heapster/metrics/util"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	kube_api "k8s.io/api/core/v1"
@@ -29,7 +30,6 @@ import (
 	kube_client "k8s.io/client-go/kubernetes"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
-	"github.com/Stackdriver/heapster/metrics/util"
 	stats "k8s.io/kubernetes/pkg/kubelet/apis/stats/v1alpha1"
 )
 
@@ -273,8 +273,19 @@ func (this *summaryMetricsSource) decodeEphemeralStorageStatsForContainer(metric
 		glog.V(9).Infof("missing storage usage metric!")
 		return
 	}
-	usage := *rootfs.UsedBytes + *logs.UsedBytes
-	this.addIntMetric(metrics, &MetricEphemeralStorageUsage, &usage)
+	if usage := addUsage(rootfs.UsedBytes, logs.UsedBytes); usage != nil {
+		this.addIntMetric(metrics, &MetricEphemeralStorageUsage, usage)
+	}
+}
+
+func addUsage(first, second *uint64) *uint64 {
+	if first == nil {
+		return second
+	} else if second == nil {
+		return first
+	}
+	total := *first + *second
+	return &total
 }
 
 func (this *summaryMetricsSource) decodeMemoryStats(metrics *MetricSet, memory *stats.MemoryStats) {
