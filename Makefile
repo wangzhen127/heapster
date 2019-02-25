@@ -73,7 +73,8 @@ container:
 		&& GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags \"$(HEAPSTER_LDFLAGS)\" -o /build/eventer github.com/Stackdriver/heapster/events"
 
 	cp deploy/docker/Dockerfile $(TEMP_DIR)
-	docker build --pull -t $(PREFIX)/heapster-$(ARCH):$(VERSION) $(TEMP_DIR)
+	# The next command runs 'docker build' in Cloud Builder.
+	gcloud builds submit -t $(PREFIX)/heapster-$(ARCH):$(VERSION) $(TEMP_DIR)
 ifneq ($(OVERRIDE_IMAGE_NAME),)
 	docker tag $(PREFIX)/heapster-$(ARCH):$(VERSION) $(OVERRIDE_IMAGE_NAME)
 endif
