@@ -17,6 +17,10 @@ package app
 import (
 	"github.com/golang/glog"
 
+	"github.com/Stackdriver/heapster/metrics/options"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
+	nodemetricsstorage "github.com/Stackdriver/heapster/metrics/storage/nodemetrics"
+	podmetricsstorage "github.com/Stackdriver/heapster/metrics/storage/podmetrics"
 	"k8s.io/apimachinery/pkg/apimachinery/announced"
 	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -24,10 +28,6 @@ import (
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"github.com/Stackdriver/heapster/metrics/options"
-	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
-	nodemetricsstorage "github.com/Stackdriver/heapster/metrics/storage/nodemetrics"
-	podmetricsstorage "github.com/Stackdriver/heapster/metrics/storage/podmetrics"
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 	_ "k8s.io/kubernetes/pkg/apis/core/install"
 	"k8s.io/metrics/pkg/apis/metrics"

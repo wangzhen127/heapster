@@ -20,13 +20,13 @@ import (
 
 	"github.com/golang/glog"
 
+	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
+	"github.com/Stackdriver/heapster/metrics/core"
 	kube_api "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/util/wait"
 	kube_client "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
-	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type NamespaceBasedEnricher struct {

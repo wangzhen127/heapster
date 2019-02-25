@@ -33,15 +33,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/pflag"
 
-	kube_api "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/fields"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/apiserver/pkg/server/healthz"
-	"k8s.io/apiserver/pkg/util/flag"
-	"k8s.io/apiserver/pkg/util/logs"
-	kube_client "k8s.io/client-go/kubernetes"
-	v1listers "k8s.io/client-go/listers/core/v1"
-	"k8s.io/client-go/tools/cache"
 	"github.com/Stackdriver/heapster/common/flags"
 	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
 	"github.com/Stackdriver/heapster/metrics/cmd/heapster-apiserver/app"
@@ -54,6 +45,15 @@ import (
 	"github.com/Stackdriver/heapster/metrics/sources"
 	"github.com/Stackdriver/heapster/metrics/util"
 	"github.com/Stackdriver/heapster/version"
+	kube_api "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/apiserver/pkg/server/healthz"
+	"k8s.io/apiserver/pkg/util/flag"
+	"k8s.io/apiserver/pkg/util/logs"
+	kube_client "k8s.io/client-go/kubernetes"
+	v1listers "k8s.io/client-go/listers/core/v1"
+	"k8s.io/client-go/tools/cache"
 )
 
 func main() {

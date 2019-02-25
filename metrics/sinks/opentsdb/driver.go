@@ -22,10 +22,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	opentsdbclient "github.com/bluebreezecf/opentsdb-goclient/client"
 	opentsdbcfg "github.com/bluebreezecf/opentsdb-goclient/config"
 	"github.com/golang/glog"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

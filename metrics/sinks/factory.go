@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/common/flags"
 	"github.com/Stackdriver/heapster/metrics/core"
 	"github.com/Stackdriver/heapster/metrics/sinks/elasticsearch"
@@ -36,6 +35,7 @@ import (
 	"github.com/Stackdriver/heapster/metrics/sinks/stackdriver"
 	"github.com/Stackdriver/heapster/metrics/sinks/statsd"
 	"github.com/Stackdriver/heapster/metrics/sinks/wavefront"
+	"github.com/golang/glog"
 )
 
 type SinkFactory struct {

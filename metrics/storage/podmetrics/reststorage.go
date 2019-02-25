@@ -20,6 +20,9 @@ import (
 
 	"github.com/golang/glog"
 
+	"github.com/Stackdriver/heapster/metrics/core"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
+	"github.com/Stackdriver/heapster/metrics/storage/util"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
@@ -30,9 +33,6 @@ import (
 	genericapirequest "k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"github.com/Stackdriver/heapster/metrics/core"
-	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
-	"github.com/Stackdriver/heapster/metrics/storage/util"
 	"k8s.io/metrics/pkg/apis/metrics"
 	_ "k8s.io/metrics/pkg/apis/metrics/install"
 )

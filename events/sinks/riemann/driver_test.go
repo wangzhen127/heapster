@@ -19,13 +19,13 @@ import (
 	"testing"
 	"time"
 
+	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
+	"github.com/Stackdriver/heapster/events/core"
 	pb "github.com/golang/protobuf/proto"
 	"github.com/riemann/riemann-go-client/proto"
 	"github.com/stretchr/testify/assert"
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
-	"github.com/Stackdriver/heapster/events/core"
 )
 
 type fakeRiemannClient struct {

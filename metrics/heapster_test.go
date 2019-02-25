@@ -26,11 +26,11 @@ import (
 	"github.com/golang/glog"
 	"github.com/stretchr/testify/assert"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1listers "k8s.io/client-go/listers/core/v1"
 	"github.com/Stackdriver/heapster/metrics/cmd/heapster-apiserver/app"
 	"github.com/Stackdriver/heapster/metrics/options"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1listers "k8s.io/client-go/listers/core/v1"
 	metrics "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 

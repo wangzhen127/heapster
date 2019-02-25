@@ -20,11 +20,11 @@ package app
 import (
 	"fmt"
 
+	"github.com/Stackdriver/heapster/metrics/options"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"k8s.io/apimachinery/pkg/util/wait"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"github.com/Stackdriver/heapster/metrics/options"
-	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 )
 

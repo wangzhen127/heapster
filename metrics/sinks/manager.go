@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

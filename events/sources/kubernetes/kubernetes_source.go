@@ -21,13 +21,13 @@ import (
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 
+	kubeconfig "github.com/Stackdriver/heapster/common/kubernetes"
+	"github.com/Stackdriver/heapster/events/core"
 	kubeapi "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kubewatch "k8s.io/apimachinery/pkg/watch"
 	kubeclient "k8s.io/client-go/kubernetes"
 	kubev1core "k8s.io/client-go/kubernetes/typed/core/v1"
-	kubeconfig "github.com/Stackdriver/heapster/common/kubernetes"
-	"github.com/Stackdriver/heapster/events/core"
 )
 
 const (

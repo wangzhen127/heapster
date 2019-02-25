@@ -20,11 +20,11 @@ import (
 	"testing"
 	"time"
 
+	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
+	"github.com/Stackdriver/heapster/events/core"
 	"github.com/stretchr/testify/assert"
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
-	"github.com/Stackdriver/heapster/events/core"
 )
 
 type dataSavedToES struct {

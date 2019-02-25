@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

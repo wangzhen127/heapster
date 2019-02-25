@@ -18,10 +18,10 @@ import (
 	"testing"
 	"time"
 
+	event_core "github.com/Stackdriver/heapster/events/core"
 	"github.com/stretchr/testify/assert"
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	event_core "github.com/Stackdriver/heapster/events/core"
 )
 
 type fakeKafkaClient struct {

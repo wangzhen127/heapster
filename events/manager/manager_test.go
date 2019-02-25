@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
-	kube_api "k8s.io/api/core/v1"
 	"github.com/Stackdriver/heapster/events/core"
 	"github.com/Stackdriver/heapster/events/util"
+	kube_api "k8s.io/api/core/v1"
 )
 
 func TestFlow(t *testing.T) {

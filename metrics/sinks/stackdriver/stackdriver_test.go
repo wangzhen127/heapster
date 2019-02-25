@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	"github.com/stretchr/testify/assert"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 var (

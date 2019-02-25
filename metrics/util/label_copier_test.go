@@ -17,8 +17,8 @@ package util
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDefault(t *testing.T) {

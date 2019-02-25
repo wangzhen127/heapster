@@ -27,14 +27,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/glog"
-	"k8s.io/apiserver/pkg/util/logs"
 	"github.com/Stackdriver/heapster/common/flags"
 	"github.com/Stackdriver/heapster/events/api"
 	"github.com/Stackdriver/heapster/events/manager"
 	"github.com/Stackdriver/heapster/events/sinks"
 	"github.com/Stackdriver/heapster/events/sources"
 	"github.com/Stackdriver/heapster/version"
+	"github.com/golang/glog"
+	"k8s.io/apiserver/pkg/util/logs"
 )
 
 var (

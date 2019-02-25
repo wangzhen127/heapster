@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 )
 
 type LogSink struct {

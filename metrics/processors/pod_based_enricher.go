@@ -21,9 +21,9 @@ import (
 
 	"github.com/Stackdriver/heapster/metrics/util"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	kube_api "k8s.io/api/core/v1"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type PodBasedEnricher struct {

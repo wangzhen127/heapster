@@ -20,9 +20,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Stackdriver/heapster/events/manager"
 	"github.com/golang/glog"
 	"k8s.io/apiserver/pkg/server/healthz"
-	"github.com/Stackdriver/heapster/events/manager"
 )
 
 const (

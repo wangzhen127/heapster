@@ -19,8 +19,8 @@ import (
 
 	"github.com/spf13/pflag"
 
-	genericoptions "k8s.io/apiserver/pkg/server/options"
 	"github.com/Stackdriver/heapster/common/flags"
+	genericoptions "k8s.io/apiserver/pkg/server/options"
 )
 
 type HeapsterRunOptions struct {

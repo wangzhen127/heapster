@@ -24,6 +24,8 @@ import (
 	"testing"
 	"time"
 
+	api_v1 "github.com/Stackdriver/heapster/metrics/api/v1/types"
+	"github.com/Stackdriver/heapster/metrics/core"
 	"github.com/golang/glog"
 	"github.com/stretchr/testify/require"
 	kube_v1 "k8s.io/api/core/v1"
@@ -31,8 +33,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/sets"
-	api_v1 "github.com/Stackdriver/heapster/metrics/api/v1/types"
-	"github.com/Stackdriver/heapster/metrics/core"
 	metrics_api "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 

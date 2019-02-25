@@ -18,12 +18,12 @@ import (
 	"testing"
 	"time"
 
+	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
+	"github.com/Stackdriver/heapster/metrics/core"
 	pb "github.com/golang/protobuf/proto"
 	"github.com/riemann/riemann-go-client"
 	"github.com/riemann/riemann-go-client/proto"
 	"github.com/stretchr/testify/assert"
-	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 type fakeRiemannClient struct {

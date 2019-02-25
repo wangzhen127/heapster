@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/Stackdriver/heapster/metrics/sources/kubelet"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	util "k8s.io/client-go/util/testing"
-	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/Stackdriver/heapster/metrics/sources/kubelet"
 	stats "k8s.io/kubernetes/pkg/kubelet/apis/stats/v1alpha1"
 )
 

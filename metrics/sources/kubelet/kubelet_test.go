@@ -21,6 +21,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	cadvisor_api "github.com/google/cadvisor/info/v1"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +29,6 @@ import (
 	kube_api "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	util "k8s.io/client-go/util/testing"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 func TestDecodeMetrics1(t *testing.T) {

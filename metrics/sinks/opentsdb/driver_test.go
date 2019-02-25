@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Stackdriver/heapster/metrics/core"
 	opentsdb "github.com/bluebreezecf/opentsdb-goclient/client"
 	"github.com/stretchr/testify/assert"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 var (

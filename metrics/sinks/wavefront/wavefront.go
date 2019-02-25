@@ -16,8 +16,8 @@ package wavefront
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 	"net"
 	"net/url"
 	"sort"

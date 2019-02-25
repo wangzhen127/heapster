@@ -15,8 +15,8 @@
 package processors
 
 import (
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 )
 
 // Does not add any nodes.

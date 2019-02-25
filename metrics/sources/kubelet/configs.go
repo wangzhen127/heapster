@@ -18,10 +18,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/golang/glog"
-	kube_client "k8s.io/client-go/rest"
 	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
 	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
+	"github.com/golang/glog"
+	kube_client "k8s.io/client-go/rest"
 )
 
 const (

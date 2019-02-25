@@ -18,8 +18,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/events/core"
+	"github.com/golang/glog"
 )
 
 type LogSink struct {

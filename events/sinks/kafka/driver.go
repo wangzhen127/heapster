@@ -20,11 +20,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
-	kube_api "k8s.io/api/core/v1"
 	kafka_common "github.com/Stackdriver/heapster/common/kafka"
 	event_core "github.com/Stackdriver/heapster/events/core"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
+	kube_api "k8s.io/api/core/v1"
 )
 
 type KafkaSinkPoint struct {

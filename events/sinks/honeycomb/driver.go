@@ -18,10 +18,10 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/golang/glog"
-	kube_api "k8s.io/api/core/v1"
 	honeycomb_common "github.com/Stackdriver/heapster/common/honeycomb"
 	event_core "github.com/Stackdriver/heapster/events/core"
+	"github.com/golang/glog"
+	kube_api "k8s.io/api/core/v1"
 )
 
 type honeycombSink struct {

@@ -27,10 +27,10 @@ import (
 	"strconv"
 	"time"
 
+	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
 	"github.com/golang/glog"
 	cadvisor "github.com/google/cadvisor/info/v1"
 	jsoniter "github.com/json-iterator/go"
-	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
 	stats "k8s.io/kubernetes/pkg/kubelet/apis/stats/v1alpha1"
 )
 

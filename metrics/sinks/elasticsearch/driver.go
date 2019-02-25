@@ -19,9 +19,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
 	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 	"reflect"
 )
 

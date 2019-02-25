@@ -17,9 +17,9 @@ package manager
 import (
 	"time"
 
+	"github.com/Stackdriver/heapster/events/core"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/Stackdriver/heapster/events/core"
 )
 
 var (

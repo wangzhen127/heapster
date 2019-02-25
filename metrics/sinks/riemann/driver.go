@@ -18,10 +18,10 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/golang/glog"
-	"github.com/riemann/riemann-go-client"
 	riemannCommon "github.com/Stackdriver/heapster/common/riemann"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
+	"github.com/riemann/riemann-go-client"
 )
 
 // contains the riemann client, the riemann configuration, and a RWMutex

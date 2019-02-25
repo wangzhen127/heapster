@@ -26,13 +26,13 @@ import (
 	restful "github.com/emicklei/go-restful"
 	"github.com/golang/glog"
 
+	"github.com/Stackdriver/heapster/metrics/core"
+	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	kube_v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	v1listers "k8s.io/client-go/listers/core/v1"
-	"github.com/Stackdriver/heapster/metrics/core"
-	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	metrics "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 

@@ -19,11 +19,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
-	kube_api "k8s.io/api/core/v1"
 	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
 	event_core "github.com/Stackdriver/heapster/events/core"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
+	kube_api "k8s.io/api/core/v1"
 )
 
 const (

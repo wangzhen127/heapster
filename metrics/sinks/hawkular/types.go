@@ -18,8 +18,8 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/hawkular/hawkular-client-go/metrics"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/hawkular/hawkular-client-go/metrics"
 )
 
 type Filter func(ms *core.MetricSet, metricName string) bool

@@ -26,6 +26,8 @@ import (
 
 	gce "cloud.google.com/go/compute/metadata"
 	sd_api "cloud.google.com/go/monitoring/apiv3"
+	gce_util "github.com/Stackdriver/heapster/common/gce"
+	"github.com/Stackdriver/heapster/metrics/core"
 	"github.com/golang/glog"
 	google_proto "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/prometheus/client_golang/prometheus"
@@ -34,8 +36,6 @@ import (
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	grpc_codes "google.golang.org/grpc/codes"
 	grpc_status "google.golang.org/grpc/status"
-	gce_util "github.com/Stackdriver/heapster/common/gce"
-	"github.com/Stackdriver/heapster/metrics/core"
 )
 
 const (

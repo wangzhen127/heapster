@@ -19,9 +19,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
 	kafka_common "github.com/Stackdriver/heapster/common/kafka"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 )
 
 type KafkaSinkPoint struct {

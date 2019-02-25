@@ -16,8 +16,8 @@ package statsd
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/golang/glog"
 	"net/url"
 	"strconv"
 	"strings"

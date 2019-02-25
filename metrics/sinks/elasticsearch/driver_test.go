@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	esCommon "github.com/Stackdriver/heapster/common/elasticsearch"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/stretchr/testify/assert"
 )
 
 type fakeESSink struct {

@@ -27,8 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hawkular/hawkular-client-go/metrics"
 	"github.com/Stackdriver/heapster/metrics/core"
+	"github.com/hawkular/hawkular-client-go/metrics"
 
 	assert "github.com/stretchr/testify/require"
 )
