@@ -1,2 +1,6 @@
 language: go
+# Skip the default install step to avoid running godep: https://docs.travis-ci.com/user/languages/go/#godep-support
+# This is needed because godep currently fails to download a dependency from bitbucket.org due to an old TLS version.
+# This is OK because the dependencies are already in the vendor directory.
+install: skip
 script: make test-unit
