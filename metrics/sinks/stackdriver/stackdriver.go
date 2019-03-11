@@ -508,7 +508,7 @@ func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, l
 			return nil
 		}
 		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
-		ts := legacyCreateTimeSeries(resourceLabels, legacyNodeInodesMD, point)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyDiskInodesTotalMD, point)
 		ts.Metric.Labels = map[string]string{
 			"device_name": metric.Labels[core.LabelResourceID.Key],
 		}
@@ -518,7 +518,7 @@ func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, l
 			return nil
 		}
 		point := sink.intPoint(timestamp, timestamp, metric.IntValue)
-		ts := legacyCreateTimeSeries(resourceLabels, legacyNodeInodesFreeMD, point)
+		ts := legacyCreateTimeSeries(resourceLabels, legacyDiskInodesFreeMD, point)
 		ts.Metric.Labels = map[string]string{
 			"device_name": metric.Labels[core.LabelResourceID.Key],
 		}
@@ -676,6 +676,18 @@ func (sink *StackdriverSink) TranslateLabeledMetric(timestamp time.Time, labels 
 				core.LabelAcceleratorModel.Key: metric.Labels[core.LabelAcceleratorModel.Key],
 				core.LabelAcceleratorID.Key:    metric.Labels[core.LabelAcceleratorID.Key],
 			}
+			return ts
+		}
+	case core.MetricSetTypeNode:
+		nodeLabels := sink.getNodeResourceLabels(labels)
+		switch metric.Name {
+		case core.MetricFilesystemInodes.MetricDescriptor.Name:
+			point := sink.intPoint(timestamp, timestamp, metric.IntValue)
+			ts := createTimeSeries("k8s_node", nodeLabels, ephemeralstorageInodesTotalMD, point)
+			return ts
+		case core.MetricFilesystemInodesFree.MetricDescriptor.Name:
+			point := sink.intPoint(timestamp, timestamp, metric.IntValue)
+			ts := createTimeSeries("k8s_node", nodeLabels, ephemeralstorageInodesFreeMD, point)
 			return ts
 		}
 	}
