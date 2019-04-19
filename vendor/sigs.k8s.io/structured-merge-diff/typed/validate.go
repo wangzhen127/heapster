@@ -42,17 +42,12 @@ type validatingObjectWalker struct {
 	//  * untyped fields
 	leafFieldCallback func(fieldpath.Path)
 
-	// If set, this is called on "node fields":
-	//  * list items
-	//  * map items
-	nodeFieldCallback func(fieldpath.Path)
-
 	// internal housekeeping--don't set when constructing.
 	inLeaf bool // Set to true if we're in a "big leaf"--atomic map/list
 }
 
 func (v validatingObjectWalker) validate() ValidationErrors {
-	return resolveSchema(v.schema, v.typeRef, &v.value, v)
+	return resolveSchema(v.schema, v.typeRef, v)
 }
 
 // doLeaf should be called on leaves before descending into children, if there
@@ -69,21 +64,6 @@ func (v *validatingObjectWalker) doLeaf() {
 		// At the moment, this is only used to build fieldsets; we can
 		// add more than the path in here if needed.
 		v.leafFieldCallback(v.path)
-	}
-}
-
-// doNode should be called on nodes after descending into children
-func (v *validatingObjectWalker) doNode() {
-	if v.inLeaf {
-		// We're in a "big leaf", an atomic map or list. Ignore
-		// subsequent leaves.
-		return
-	}
-
-	if v.nodeFieldCallback != nil {
-		// At the moment, this is only used to build fieldsets; we can
-		// add more than the path in here if needed.
-		v.nodeFieldCallback(v.path)
 	}
 }
 
@@ -164,8 +144,6 @@ func (v validatingObjectWalker) visitListItems(t schema.List, list *value.List) 
 		v2.value = child
 		v2.typeRef = t.ElementType
 		errs = append(errs, v2.validate()...)
-
-		v2.doNode()
 	}
 	return errs
 }
@@ -197,8 +175,6 @@ func (v validatingObjectWalker) visitMapItems(t schema.Map, m *value.Map) (errs 
 		v2.value = item.Value
 		v2.typeRef = t.ElementType
 		errs = append(errs, v2.validate()...)
-
-		v2.doNode()
 	}
 	return errs
 }
@@ -220,4 +196,13 @@ func (v validatingObjectWalker) doMap(t schema.Map) (errs ValidationErrors) {
 	errs = v.visitMapItems(t, m)
 
 	return errs
+}
+
+func (v validatingObjectWalker) doUntyped(t schema.Untyped) (errs ValidationErrors) {
+	if t.ElementRelationship == "" || t.ElementRelationship == schema.Atomic {
+		// Untyped sections allow anything, and are considered leaf
+		// fields.
+		v.doLeaf()
+	}
+	return nil
 }

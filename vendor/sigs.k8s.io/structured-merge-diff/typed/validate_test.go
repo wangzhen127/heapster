@@ -44,17 +44,7 @@ var validationCases = []validationTestCase{{
         scalar: string
     - name: value
       type:
-        namedType: __untyped_atomic_
-- name: __untyped_atomic_
-  scalar: untyped
-  list:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
-  map:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
+        untyped: {}
 `,
 	validObjects: []typed.YAMLObject{
 		`{"key":"foo","value":1}`,
@@ -63,12 +53,12 @@ var validationCases = []validationTestCase{{
 		`{"key":"foo"}`,
 		`{"key":"foo","value":true}`,
 		`{"key":"foo","value":true}`,
-		`{"key":null}`,
 	},
 	invalidObjects: []typed.YAMLObject{
 		`{"key":true,"value":1}`,
 		`{"key":1,"value":{}}`,
 		`{"key":false,"value":null}`,
+		`{"key":null}`,
 		`{"key":[1, 2]}`,
 		`{"key":{"foo":true}}`,
 	},
@@ -108,12 +98,9 @@ var validationCases = []validationTestCase{{
           elementRelationship: associative
 `,
 	validObjects: []typed.YAMLObject{
-		`{"numeric":null}`,
 		`{"numeric":1}`,
 		`{"numeric":3.14159}`,
-		`{"string":null}`,
 		`{"string":"aoeu"}`,
-		`{"bool":null}`,
 		`{"bool":true}`,
 		`{"bool":false}`,
 		`{"setStr":["a","b","c"]}`,
@@ -121,15 +108,18 @@ var validationCases = []validationTestCase{{
 		`{"setNumeric":[1,2,3,3.14159]}`,
 	},
 	invalidObjects: []typed.YAMLObject{
+		`{"numeric":null}`,
 		`{"numeric":["foo"]}`,
 		`{"numeric":{"a":1}}`,
 		`{"numeric":"foo"}`,
 		`{"numeric":true}`,
+		`{"string":null}`,
 		`{"string":1}`,
 		`{"string":3.5}`,
 		`{"string":true}`,
 		`{"string":{"a":1}}`,
 		`{"string":["foo"]}`,
+		`{"bool":null}`,
 		`{"bool":1}`,
 		`{"bool":3.5}`,
 		`{"bool":"aoeu"}`,

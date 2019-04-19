@@ -60,17 +60,7 @@ var fieldsetCases = []fieldsetTestCase{{
         scalar: string
     - name: value
       type:
-        namedType: __untyped_atomic_
-- name: __untyped_atomic_
-  scalar: untyped
-  list:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
-  map:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
+        untyped: {}
 `,
 	pairs: []objSetPair{
 		{`{"key":"foo","value":1}`, _NS(_P("key"), _P("value"))},
@@ -231,15 +221,11 @@ var fieldsetCases = []fieldsetTestCase{{
 	pairs: []objSetPair{
 		{`{"list":[]}`, _NS()},
 		{`{"list":[{"key":"a","id":1,"value":{"a":"a"}}]}`, _NS(
-			_P("list", _KBF("key", _SV("a"), "id", _IV(1))),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(1)), "key"),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(1)), "id"),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(1)), "value", "a"),
 		)},
 		{`{"list":[{"key":"a","id":1},{"key":"a","id":2},{"key":"b","id":1}]}`, _NS(
-			_P("list", _KBF("key", _SV("a"), "id", _IV(1))),
-			_P("list", _KBF("key", _SV("a"), "id", _IV(2))),
-			_P("list", _KBF("key", _SV("b"), "id", _IV(1))),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(1)), "key"),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(1)), "id"),
 			_P("list", _KBF("key", _SV("a"), "id", _IV(2)), "key"),

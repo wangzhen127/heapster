@@ -35,12 +35,6 @@ func (fp Path) String() string {
 	return strings.Join(strs, "")
 }
 
-func (fp Path) Copy() Path {
-	new := make(Path, len(fp))
-	copy(new, fp)
-	return new
-}
-
 // MakePath constructs a Path. The parts may be PathElements, ints, strings.
 func MakePath(parts ...interface{}) (Path, error) {
 	var fp Path

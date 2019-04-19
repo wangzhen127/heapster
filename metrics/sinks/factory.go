@@ -31,7 +31,6 @@ import (
 	logsink "github.com/Stackdriver/heapster/metrics/sinks/log"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"github.com/Stackdriver/heapster/metrics/sinks/opentsdb"
-	"github.com/Stackdriver/heapster/metrics/sinks/riemann"
 	"github.com/Stackdriver/heapster/metrics/sinks/stackdriver"
 	"github.com/Stackdriver/heapster/metrics/sinks/statsd"
 	"github.com/Stackdriver/heapster/metrics/sinks/wavefront"
@@ -71,8 +70,6 @@ func (this *SinkFactory) Build(uri flags.Uri) (core.DataSink, error) {
 		return opentsdb.CreateOpenTSDBSink(&uri.Val)
 	case "wavefront":
 		return wavefront.NewWavefrontSink(&uri.Val)
-	case "riemann":
-		return riemann.CreateRiemannSink(&uri.Val)
 	case "honeycomb":
 		return honeycomb.NewHoneycombSink(&uri.Val)
 	default:

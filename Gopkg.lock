@@ -503,7 +503,7 @@
   branch = "master"
   name = "sigs.k8s.io/structured-merge-diff"
   packages = ["fieldpath","merge","schema","typed","value"]
-  revision = "b2ed7e1d99f6c7ed9eb827903fe1e3b23a598fbd"
+  revision = "d43a45b8663b01dd7d86e7cc1656dd8651280ed7"
 
 [[projects]]
   name = "sigs.k8s.io/yaml"
@@ -514,6 +514,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e95830cb0cd2f8ac71ec1f98b241e0fdba1e00c9dc2b4b8d15a01904dfc09016"
+  inputs-digest = "0f07e40a18514efdde1f24cd7ee80b2c2025b23864c03589b8cb850b99115b77"
   solver-name = "gps-cdcl"
   solver-version = 1

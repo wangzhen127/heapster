@@ -20,24 +20,23 @@ import (
 	"github.com/Stackdriver/heapster/metrics/core"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/metrics/pkg/apis/metrics"
 )
 
-func ParseResourceList(ms *core.MetricSet) (metrics.ResourceList, error) {
+func ParseResourceList(ms *core.MetricSet) (v1.ResourceList, error) {
 	cpu, found := ms.MetricValues[core.MetricCpuUsageRate.MetricDescriptor.Name]
 	if !found {
-		return metrics.ResourceList{}, fmt.Errorf("cpu not found")
+		return v1.ResourceList{}, fmt.Errorf("cpu not found")
 	}
 	mem, found := ms.MetricValues[core.MetricMemoryWorkingSet.MetricDescriptor.Name]
 	if !found {
-		return metrics.ResourceList{}, fmt.Errorf("memory not found")
+		return v1.ResourceList{}, fmt.Errorf("memory not found")
 	}
 
-	return metrics.ResourceList{
-		metrics.ResourceName(string(v1.ResourceCPU)): *resource.NewMilliQuantity(
+	return v1.ResourceList{
+		v1.ResourceName(string(v1.ResourceCPU)): *resource.NewMilliQuantity(
 			cpu.IntValue,
 			resource.DecimalSI),
-		metrics.ResourceName(string(v1.ResourceMemory)): *resource.NewQuantity(
+		v1.ResourceName(string(v1.ResourceMemory)): *resource.NewQuantity(
 			mem.IntValue,
 			resource.BinarySI),
 	}, nil

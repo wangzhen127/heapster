@@ -25,7 +25,6 @@ import (
 	"github.com/Stackdriver/heapster/events/sinks/influxdb"
 	"github.com/Stackdriver/heapster/events/sinks/kafka"
 	"github.com/Stackdriver/heapster/events/sinks/log"
-	"github.com/Stackdriver/heapster/events/sinks/riemann"
 
 	"github.com/golang/glog"
 )
@@ -45,8 +44,6 @@ func (this *SinkFactory) Build(uri flags.Uri) (core.EventSink, error) {
 		return elasticsearch.NewElasticSearchSink(&uri.Val)
 	case "kafka":
 		return kafka.NewKafkaSink(&uri.Val)
-	case "riemann":
-		return riemann.CreateRiemannSink(&uri.Val)
 	case "honeycomb":
 		return honeycomb.NewHoneycombSink(&uri.Val)
 	default:

@@ -33,9 +33,9 @@ type Parser struct {
 }
 
 // create builds an unvalidated parser.
-func create(s YAMLObject) (*Parser, error) {
+func create(schema YAMLObject) (*Parser, error) {
 	p := Parser{}
-	err := yaml.Unmarshal([]byte(s), &p.Schema)
+	err := yaml.Unmarshal([]byte(schema), &p.Schema)
 	return &p, err
 }
 
@@ -55,11 +55,7 @@ func NewParser(schema YAMLObject) (*Parser, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to validate schema: %v", err)
 	}
-	p, err := create(schema)
-	if err != nil {
-		return nil, err
-	}
-	return p, nil
+	return create(schema)
 }
 
 // TypeNames returns a list of types this parser understands.
@@ -72,66 +68,47 @@ func (p *Parser) TypeNames() (names []string) {
 
 // Type returns a helper which can produce objects of the given type. Any
 // errors are deferred until a further function is called.
-func (p *Parser) Type(name string) ParseableType {
-	return ParseableType{
-		Schema:  &p.Schema,
-		TypeRef: schema.TypeRef{NamedType: &name},
+func (p *Parser) Type(name string) *ParseableType {
+	return &ParseableType{
+		parser:   p,
+		typename: name,
 	}
 }
 
 // ParseableType allows for easy production of typed objects.
 type ParseableType struct {
-	TypeRef schema.TypeRef
-	Schema  *schema.Schema
+	parser   *Parser
+	typename string
 }
 
 // IsValid return true if p's schema and typename are valid.
-func (p ParseableType) IsValid() bool {
-	_, ok := p.Schema.Resolve(p.TypeRef)
+func (p *ParseableType) IsValid() bool {
+	_, ok := p.parser.Schema.Resolve(schema.TypeRef{NamedType: &p.typename})
 	return ok
+}
+
+// New returns a new empty object with the current schema and the
+// type "typename".
+func (p *ParseableType) New() (TypedValue, error) {
+	return p.FromYAML(YAMLObject("{}"))
 }
 
 // FromYAML parses a yaml string into an object with the current schema
 // and the type "typename" or an error if validation fails.
-func (p ParseableType) FromYAML(object YAMLObject) (*TypedValue, error) {
+func (p *ParseableType) FromYAML(object YAMLObject) (TypedValue, error) {
 	v, err := value.FromYAML([]byte(object))
 	if err != nil {
-		return nil, err
+		return TypedValue{}, err
 	}
-	return AsTyped(v, p.Schema, p.TypeRef)
+	return AsTyped(v, &p.parser.Schema, p.typename)
 }
 
 // FromUnstructured converts a go interface to a TypedValue. It will return an
 // error if the resulting object fails schema validation.
-func (p ParseableType) FromUnstructured(in interface{}) (*TypedValue, error) {
+func (p *ParseableType) FromUnstructured(in interface{}) (TypedValue, error) {
 	v, err := value.FromUnstructured(in)
 	if err != nil {
-		return nil, err
+		return TypedValue{}, err
 	}
-	return AsTyped(v, p.Schema, p.TypeRef)
+	return AsTyped(v, &p.parser.Schema, p.typename)
 }
-
-// DeducedParseableType is a ParseableType that deduces the type from
-// the content of the object.
-var DeducedParseableType ParseableType = createOrDie(YAMLObject(`types:
-- name: __untyped_atomic_
-  scalar: untyped
-  list:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
-  map:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
-- name: __untyped_deduced_
-  scalar: untyped
-  list:
-    elementType:
-      namedType: __untyped_atomic_
-    elementRelationship: atomic
-  map:
-    elementType:
-      namedType: __untyped_deduced_
-    elementRelationship: separable
-`)).Type("__untyped_deduced_")
