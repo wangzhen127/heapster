@@ -23,7 +23,6 @@ import (
 	podmetricsstorage "github.com/Stackdriver/heapster/metrics/storage/podmetrics"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	v1listers "k8s.io/client-go/listers/core/v1"
@@ -40,7 +39,7 @@ func init() {
 func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.GenericAPIServer,
 	metricSink *metricsink.MetricSink, nodeLister v1listers.NodeLister, podLister v1listers.PodLister) {
 
-	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(metrics.GroupName, legacyscheme.Registry, legacyscheme.Scheme, legacyscheme.ParameterCodec, legacyscheme.Codecs)
+	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(metrics.GroupName, legacyscheme.Scheme, legacyscheme.ParameterCodec, legacyscheme.Codecs)
 
 	nodemetricsStorage := nodemetricsstorage.NewStorage(metrics.Resource("nodemetrics"), metricSink, nodeLister)
 	podmetricsStorage := podmetricsstorage.NewStorage(metrics.Resource("podmetrics"), metricSink, podLister)
@@ -48,7 +47,7 @@ func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.Gener
 		"nodes": nodemetricsStorage,
 		"pods":  podmetricsStorage,
 	}
-	apiGroupInfo.VersionedResourcesStorageMap[metrics_api.SchemeGroupVersion.Version] = heapsterResources
+	apiGroupInfo.VersionedResourcesStorageMap[v1alpha1.SchemeGroupVersion.Version] = heapsterResources
 
 	if err := g.InstallAPIGroup(&apiGroupInfo); err != nil {
 		glog.Fatalf("Error in registering group versions: %v", err)
@@ -58,7 +57,7 @@ func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.Gener
 // This function is directly copied from https://github.com/kubernetes/metrics/blob/master/pkg/apis/metrics/install/install.go#L31 with only changes by replacing v1beta1 to v1alpha1.
 // This function should be deleted only after move metrics to v1beta1.
 // Install registers the API group and adds types to a scheme
-func install(groupFactojyRegistry announced.APIGroupFactoryRegistry, registry *registered.APIRegistrationManager, scheme *runtime.Scheme) {
+func install(scheme *runtime.Scheme) {
 	utilruntime.Must(metrics.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	utilruntime.Must(scheme.SetVersionPriority(v1alpha1.SchemeGroupVersion))

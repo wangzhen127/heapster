@@ -25,7 +25,7 @@ import (
 
 type HeapsterRunOptions struct {
 	// genericoptions.ReccomendedOptions - EtcdOptions
-	SecureServing  *genericoptions.SecureServingOptions
+	SecureServing  *genericoptions.SecureServingOptionsWithLoopback
 	Authentication *genericoptions.DelegatingAuthenticationOptions
 	Authorization  *genericoptions.DelegatingAuthorizationOptions
 	Features       *genericoptions.FeatureOptions
@@ -56,7 +56,7 @@ type HeapsterRunOptions struct {
 
 func NewHeapsterRunOptions() *HeapsterRunOptions {
 	return &HeapsterRunOptions{
-		SecureServing:  genericoptions.NewSecureServingOptions(),
+		SecureServing:  genericoptions.NewSecureServingOptions().WithLoopback(),
 		Authentication: genericoptions.NewDelegatingAuthenticationOptions(),
 		Authorization:  genericoptions.NewDelegatingAuthorizationOptions(),
 		Features:       genericoptions.NewFeatureOptions(),

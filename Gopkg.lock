@@ -100,8 +100,7 @@
 [[projects]]
   name = "github.com/evanphx/json-patch"
   packages = ["."]
-  revision = "72bf35d0ff611848c1dc9df0f976c81192392fa5"
-  version = "v4.1.0"
+  revision = "5858425f75500d40c52783dce87d085a483ce135"
 
 [[projects]]
   name = "github.com/go-openapi/jsonpointer"
@@ -292,8 +291,7 @@
 [[projects]]
   name = "github.com/prometheus/client_golang"
   packages = ["prometheus","prometheus/internal"]
-  revision = "505eaef017263e299324067d40ca2c48f6a2cf50"
-  version = "v0.9.2"
+  revision = "6450fc55b1a3e9b9784fbebe3d42f9ac3f7cf2e6"
 
 [[projects]]
   branch = "master"
@@ -503,7 +501,7 @@
   branch = "master"
   name = "sigs.k8s.io/structured-merge-diff"
   packages = ["fieldpath","merge","schema","typed","value"]
-  revision = "d43a45b8663b01dd7d86e7cc1656dd8651280ed7"
+  revision = "e85c7b244fd2cc57bb829d73a061f93a441e63ce"
 
 [[projects]]
   name = "sigs.k8s.io/yaml"

@@ -66,20 +66,18 @@ func newAPIServer(s *options.HeapsterRunOptions) (*genericapiserver.GenericAPISe
 
 	serverConfig := genericapiserver.NewConfig(legacyscheme.Codecs)
 
-	if err := s.SecureServing.ApplyTo(serverConfig); err != nil {
+	if err := s.SecureServing.ApplyTo(&serverConfig.SecureServing, &serverConfig.LoopbackClientConfig); err != nil {
 		return nil, err
 	}
 
 	if !s.DisableAuthForTesting {
-		if err := s.Authentication.ApplyTo(serverConfig); err != nil {
+		if err := s.Authentication.ApplyTo(&serverConfig.Authentication, serverConfig.SecureServing, nil); err != nil {
 			return nil, err
 		}
-		if err := s.Authorization.ApplyTo(serverConfig); err != nil {
+		if err := s.Authorization.ApplyTo(&serverConfig.Authorization); err != nil {
 			return nil, err
 		}
 	}
 
-	serverConfig.SwaggerConfig = genericapiserver.DefaultSwaggerConfig()
-
-	return serverConfig.Complete(nil).New("heapster", genericapiserver.EmptyDelegate)
+	return serverConfig.Complete(nil).New("heapster", genericapiserver.NewEmptyDelegate())
 }

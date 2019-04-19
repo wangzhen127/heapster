@@ -80,7 +80,6 @@ func (s *Set) Intersection(s2 *Set) *Set {
 // Difference returns a Set containing elements which:
 // * appear in s
 // * do not appear in s2
-// * and are not children of elements that appear in s2.
 //
 // In other words, for leaf fields, this acts like a regular set difference
 // operation. When non leaf fields are compared with leaf fields ("parents"
@@ -152,6 +151,16 @@ func (s *Set) Iterate(f func(Path)) {
 func (s *Set) iteratePrefix(prefix Path, f func(Path)) {
 	s.Members.Iterate(func(pe PathElement) { f(append(prefix, pe)) })
 	s.Children.iteratePrefix(prefix, f)
+}
+
+// WithPrefix returns the subset of paths which begin with the given prefix,
+// with the prefix not included.
+func (s *Set) WithPrefix(pe PathElement) *Set {
+	subset, ok := s.Children.Get(pe)
+	if !ok {
+		return NewSet()
+	}
+	return subset
 }
 
 // setNode is a pair of PathElement / Set, for the purpose of expressing
@@ -274,9 +283,6 @@ func (s *SetNodeMap) Difference(s2 *Set) *SetNodeMap {
 	out := &SetNodeMap{}
 	for k, sn := range s.members {
 		pe := sn.pathElement
-		if s2.Members.Has(pe) {
-			continue
-		}
 		if sn2, ok := s2.Children.members[k]; ok {
 			diff := *sn.set.Difference(sn2.set)
 			// We aren't permitted to add nodes with no elements.

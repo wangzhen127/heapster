@@ -15,6 +15,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -30,7 +31,6 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	genericapirequest "k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/metrics/pkg/apis/metrics"
@@ -72,7 +72,7 @@ func (m *MetricStorage) NewList() runtime.Object {
 }
 
 // Lister interface
-func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
+func (m *MetricStorage) List(ctx context.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
 	labelSelector := labels.Everything()
 	if options != nil && options.LabelSelector != nil {
 		labelSelector = options.LabelSelector
@@ -99,7 +99,7 @@ func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainterna
 }
 
 // Getter interface
-func (m *MetricStorage) Get(ctx genericapirequest.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
+func (m *MetricStorage) Get(ctx context.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
 	// TODO: pay attention to get options
 	nodeMetrics := m.getNodeMetrics(name)
 	if nodeMetrics == nil {
