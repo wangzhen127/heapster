@@ -295,7 +295,7 @@ func (this *kubeletProvider) GetMetricsSources() []MetricsSource {
 			this.kubeletClient,
 			node.Name,
 			hostname,
-			node.Spec.ExternalID,
+			"",
 			getNodeSchedulableStatus(node),
 		))
 	}
