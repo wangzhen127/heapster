@@ -21,9 +21,8 @@ import (
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	nodemetricsstorage "github.com/Stackdriver/heapster/metrics/storage/nodemetrics"
 	podmetricsstorage "github.com/Stackdriver/heapster/metrics/storage/podmetrics"
-	"k8s.io/apimachinery/pkg/apimachinery/announced"
-	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
@@ -31,11 +30,11 @@ import (
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 	_ "k8s.io/kubernetes/pkg/apis/core/install"
 	"k8s.io/metrics/pkg/apis/metrics"
-	metrics_api "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
+	v1alpha1 "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 
 func init() {
-	install(legacyscheme.GroupFactoryRegistry, legacyscheme.Registry, legacyscheme.Scheme)
+	install(legacyscheme.Scheme)
 }
 
 func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.GenericAPIServer,
@@ -59,18 +58,8 @@ func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.Gener
 // This function is directly copied from https://github.com/kubernetes/metrics/blob/master/pkg/apis/metrics/install/install.go#L31 with only changes by replacing v1beta1 to v1alpha1.
 // This function should be deleted only after move metrics to v1beta1.
 // Install registers the API group and adds types to a scheme
-func install(groupFactoryRegistry announced.APIGroupFactoryRegistry, registry *registered.APIRegistrationManager, scheme *runtime.Scheme) {
-	if err := announced.NewGroupMetaFactory(
-		&announced.GroupMetaFactoryArgs{
-			GroupName:                  metrics.GroupName,
-			VersionPreferenceOrder:     []string{metrics_api.SchemeGroupVersion.Version},
-			RootScopedKinds:            sets.NewString("NodeMetrics"),
-			AddInternalObjectsToScheme: metrics.AddToScheme,
-		},
-		announced.VersionToSchemeFunc{
-			metrics_api.SchemeGroupVersion.Version: metrics_api.AddToScheme,
-		},
-	).Announce(groupFactoryRegistry).RegisterAndEnable(registry, scheme); err != nil {
-		panic(err)
-	}
+func install(groupFactojyRegistry announced.APIGroupFactoryRegistry, registry *registered.APIRegistrationManager, scheme *runtime.Scheme) {
+	utilruntime.Must(metrics.AddToScheme(scheme))
+	utilruntime.Must(v1alpha1.AddToScheme(scheme))
+	utilruntime.Must(scheme.SetVersionPriority(v1alpha1.SchemeGroupVersion))
 }

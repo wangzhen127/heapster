@@ -2,13 +2,13 @@ package riemanngo
 
 import (
 	"bytes"
-	"encoding/binary"
 	"crypto/tls"
-	"io/ioutil"
 	"crypto/x509"
+	"encoding/binary"
+	"io/ioutil"
 	"net"
-	"time"
 	"strings"
+	"time"
 
 	pb "github.com/golang/protobuf/proto"
 	"github.com/riemann/riemann-go-client/proto"
@@ -16,9 +16,9 @@ import (
 
 // TlsClient is a type that implements the Client interface
 type TlsClient struct {
-	addr          string
-	tlsConfig     tls.Config
-	conn          net.Conn
+	addr         string
+	tlsConfig    *tls.Config
+	conn         net.Conn
 	requestQueue chan request
 }
 
@@ -37,8 +37,8 @@ func NewTlsClient(addr string, certPath string, keyPath string, insecure bool) (
 	clientCertPool.AppendCertsFromPEM(certFile)
 
 	config := tls.Config{
-		Certificates: []tls.Certificate{cert},
-		RootCAs:      clientCertPool,
+		Certificates:       []tls.Certificate{cert},
+		RootCAs:            clientCertPool,
 		InsecureSkipVerify: insecure}
 
 	if !insecure {
@@ -48,7 +48,7 @@ func NewTlsClient(addr string, certPath string, keyPath string, insecure bool) (
 
 	t := &TlsClient{
 		addr:         addr,
-		tlsConfig:    config,
+		tlsConfig:    &config,
 		requestQueue: make(chan request),
 	}
 	go t.runRequestQueue()
@@ -61,11 +61,14 @@ func (c *TlsClient) Connect(timeout int32) error {
 	if err != nil {
 		return err
 	}
-	tlsConn := tls.Client(tcp, &c.tlsConfig)
+	tlsConn := tls.Client(tcp, c.tlsConfig)
+	err = tlsConn.Handshake()
+	if err != nil {
+		return err
+	}
 	c.conn = tlsConn
 	return nil
 }
-
 
 // TlsClient implementation of Send, queues a request to send a message to the server
 func (t *TlsClient) Send(message *proto.Msg) (*proto.Msg, error) {

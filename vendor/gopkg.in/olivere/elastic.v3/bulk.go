@@ -6,11 +6,10 @@ package elastic
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
-
-	"golang.org/x/net/context"
 
 	"gopkg.in/olivere/elastic.v3/uritemplates"
 )
@@ -49,7 +48,8 @@ func NewBulkService(client *Client) *BulkService {
 	return builder
 }
 
-func (s *BulkService) reset() {
+// Reset cleans up the request queue
+func (s *BulkService) Reset() {
 	s.requests = make([]BulkableRequest, 0)
 	s.sizeInBytes = 0
 	s.sizeInBytesCursor = 0
@@ -218,7 +218,7 @@ func (s *BulkService) DoC(ctx context.Context) (*BulkResponse, error) {
 	}
 
 	// Reset so the request can be reused
-	s.reset()
+	s.Reset()
 
 	return ret, nil
 }
@@ -275,7 +275,7 @@ type BulkResponseItem struct {
 	Index   string        `json:"_index,omitempty"`
 	Type    string        `json:"_type,omitempty"`
 	Id      string        `json:"_id,omitempty"`
-	Version int           `json:"_version,omitempty"`
+	Version int64         `json:"_version,omitempty"`
 	Status  int           `json:"status,omitempty"`
 	Found   bool          `json:"found,omitempty"`
 	Error   *ErrorDetails `json:"error,omitempty"`

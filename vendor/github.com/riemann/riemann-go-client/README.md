@@ -8,6 +8,7 @@ Features:
 * Idiomatic concurrency
 * Sending events, queries.
 * Support TCP, UDP, TLS clients.
+* Second and Microsecond time resolution
 
 This client is a fork of Goryman, a Riemann go client written by Christopher Gilbert. Thanks and full credit to him!
 
@@ -39,7 +40,7 @@ First, we'll need to import the library:
 
 ```go
 import (
-    "github.com/riemann/riemann-go-client/"
+    "github.com/riemann/riemann-go-client"
 )
 ```
 
@@ -119,6 +120,10 @@ if err != nil {
     panic(err)
 }
 ```
+
+### Uint metric type
+
+The event `Metric` value can have `uint` (or `uint32`, `uint64`) as type. In this case, this value will be converted to `int64`, which can cause issues.
 
 ## Tests
 

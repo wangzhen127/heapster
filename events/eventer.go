@@ -34,7 +34,7 @@ import (
 	"github.com/Stackdriver/heapster/events/sources"
 	"github.com/Stackdriver/heapster/version"
 	"github.com/golang/glog"
-	"k8s.io/apiserver/pkg/util/logs"
+	"k8s.io/component-base/logs"
 )
 
 var (
