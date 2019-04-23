@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 const (
@@ -34,7 +34,7 @@ const (
 
 func EnsureOnGCE() error {
 	for start := time.Now(); time.Since(start) < waitForGCETimeout; time.Sleep(waitForGCEInterval) {
-		glog.Infof("Waiting for GCE metadata to be available")
+		klog.Infof("Waiting for GCE metadata to be available")
 		if metadata.OnGCE() {
 			return nil
 		}
@@ -45,14 +45,14 @@ func EnsureOnGCE() error {
 func GetProjectId() (string, error) {
 	// Try the environment variable first.
 	if projectId, err := getProjectIdFromEnv(); err != nil {
-		glog.V(4).Infof("Unable to get GCP project ID from environment variable: %v", err)
+		klog.V(4).Infof("Unable to get GCP project ID from environment variable: %v", err)
 	} else {
 		return projectId, nil
 	}
 
 	// Try the default credentials file.
 	if projectId, err := getProjectIdFromFile(); err != nil {
-		glog.V(4).Infof("Unable to get GCP project ID from default credentials file: %v", err)
+		klog.V(4).Infof("Unable to get GCP project ID from default credentials file: %v", err)
 	} else {
 		return projectId, nil
 	}

@@ -20,8 +20,8 @@ import (
 
 	honeycomb_common "github.com/Stackdriver/heapster/common/honeycomb"
 	event_core "github.com/Stackdriver/heapster/events/core"
-	"github.com/golang/glog"
 	kube_api "k8s.io/api/core/v1"
+	"k8s.io/klog"
 )
 
 type honeycombSink struct {
@@ -70,7 +70,7 @@ func (sink *honeycombSink) ExportEvents(eventBatch *event_core.EventBatch) {
 	}
 	err := sink.client.SendBatch(exportedBatch)
 	if err != nil {
-		glog.Warningf("Failed to send event: %v", err)
+		klog.Warningf("Failed to send event: %v", err)
 		return
 	}
 }

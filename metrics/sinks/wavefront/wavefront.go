@@ -17,7 +17,7 @@ package wavefront
 import (
 	"fmt"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"net"
 	"net/url"
 	"sort"
@@ -55,7 +55,7 @@ func (wfSink *wavefrontSink) Stop() {
 func (wfSink *wavefrontSink) sendLine(line string) {
 	if wfSink.testMode {
 		wfSink.testReceivedLines = append(wfSink.testReceivedLines, line)
-		glog.Infoln(line)
+		klog.Infoln(line)
 		return
 	}
 	//if the connection was closed or interrupted - don't cause a panic (we'll retry at next interval)
@@ -206,7 +206,7 @@ func (wfSink *wavefrontSink) ExportData(batch *core.DataBatch) {
 	//make sure we're Connected before sending a real batch
 	err := wfSink.connect()
 	if err != nil {
-		glog.Warning(err)
+		klog.Warning(err)
 	}
 
 	if wfSink.Conn != nil && err == nil {
@@ -218,10 +218,10 @@ func (wfSink *wavefrontSink) connect() error {
 	var err error
 	wfSink.Conn, err = net.DialTimeout("tcp", wfSink.ProxyAddress, time.Second*10)
 	if err != nil {
-		glog.Warningf("Unable to connect to Wavefront proxy at address: %s", wfSink.ProxyAddress)
+		klog.Warningf("Unable to connect to Wavefront proxy at address: %s", wfSink.ProxyAddress)
 		return err
 	} else {
-		glog.Infof("Connected to Wavefront proxy at address: %s", wfSink.ProxyAddress)
+		klog.Infof("Connected to Wavefront proxy at address: %s", wfSink.ProxyAddress)
 		return nil
 	}
 }
@@ -248,7 +248,7 @@ func NewWavefrontSink(uri *url.URL) (core.DataSink, error) {
 		incLabels := false
 		incLabels, err := strconv.ParseBool(vals["includeLabels"][0])
 		if err != nil {
-			glog.Warning("Unable to parse the includeLabels argument. This argument is a boolean, please pass \"true\" or \"false\"")
+			klog.Warning("Unable to parse the includeLabels argument. This argument is a boolean, please pass \"true\" or \"false\"")
 			return nil, err
 		}
 		storage.IncludeLabels = incLabels
@@ -257,7 +257,7 @@ func NewWavefrontSink(uri *url.URL) (core.DataSink, error) {
 		incContainers := false
 		incContainers, err := strconv.ParseBool(vals["includeContainers"][0])
 		if err != nil {
-			glog.Warning("Unable to parse the includeContainers argument. This argument is a boolean, please pass \"true\" or \"false\"")
+			klog.Warning("Unable to parse the includeContainers argument. This argument is a boolean, please pass \"true\" or \"false\"")
 			return nil, err
 		}
 		storage.IncludeContainers = incContainers
@@ -266,7 +266,7 @@ func NewWavefrontSink(uri *url.URL) (core.DataSink, error) {
 		testMode := false
 		testMode, err := strconv.ParseBool(vals["testMode"][0])
 		if err != nil {
-			glog.Warning("Unable to parse the testMode argument. This argument is a boolean, please pass \"true\" or \"false\"")
+			klog.Warning("Unable to parse the testMode argument. This argument is a boolean, please pass \"true\" or \"false\"")
 			return nil, err
 		}
 		storage.testMode = testMode

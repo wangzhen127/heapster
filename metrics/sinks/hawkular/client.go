@@ -24,8 +24,8 @@ import (
 	"time"
 
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
 	"github.com/hawkular/hawkular-client-go/metrics"
+	"k8s.io/klog"
 )
 
 // cacheDefinitions Fetches all known definitions from all tenants (all projects in Openshift)
@@ -41,7 +41,7 @@ func (h *hawkularSink) cacheDefinitions() error {
 		}
 	}
 
-	glog.V(4).Infof("Hawkular definition pre-caching completed, cached %d definitions\n", len(h.expReg))
+	klog.V(4).Infof("Hawkular definition pre-caching completed, cached %d definitions\n", len(h.expReg))
 
 	return nil
 }
@@ -207,7 +207,7 @@ func (h *hawkularSink) nodeName(ms *core.MetricSet) string {
 		if v, found := ms.Labels[h.labelNodeId]; found {
 			return v
 		}
-		glog.V(4).Infof("The labelNodeId was set to %s but there is no label with this value."+
+		klog.V(4).Infof("The labelNodeId was set to %s but there is no label with this value."+
 			"Using the default 'nodename' label instead.", h.labelNodeId)
 	}
 
@@ -252,7 +252,7 @@ func (h *hawkularSink) createDefinitionFromModel(ms *core.MetricSet, metric core
 				for _, label := range labels {
 					labelKeyValue := strings.Split(label, ":")
 					if len(labelKeyValue) != 2 {
-						glog.V(4).Infof("Could not split the label %v into its key and value pair. This label will not be added as a tag in Hawkular Metrics.", label)
+						klog.V(4).Infof("Could not split the label %v into its key and value pair. This label will not be added as a tag in Hawkular Metrics.", label)
 					} else {
 						labelKey := h.labelTagPrefix + labelKeyValue[0]
 						mdd.Tags[labelKey] = labelKeyValue[1]
@@ -299,7 +299,7 @@ func (h *hawkularSink) registerLabeledIfNecessaryInline(ms *core.MetricSet, metr
 			// Create metric, use updateTags instead of Create because we don't care about uniqueness
 			if err := h.client.UpdateTags(heapsterTypeToHawkularType(metric.MetricType), key, mdd.Tags, m...); err != nil {
 				// Log error and don't add this key to the lookup table
-				glog.Errorf("Could not update tags: %s", err)
+				klog.Errorf("Could not update tags: %s", err)
 				return
 				// return err
 			}
@@ -345,7 +345,7 @@ func (h *hawkularSink) sendData(tmhs map[string][]metrics.MetricHeader, wg *sync
 				copy(m, h.modifiers)
 				m = append(m, metrics.Tenant(tenant))
 				if err := h.client.Write(batch, m...); err != nil {
-					glog.Errorf(err.Error())
+					klog.Errorf(err.Error())
 				}
 			}(p, k)
 		}

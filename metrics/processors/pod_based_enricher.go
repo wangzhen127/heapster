@@ -17,7 +17,7 @@ package processors
 import (
 	"fmt"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/util"
 
@@ -44,7 +44,7 @@ func (this *PodBasedEnricher) Process(batch *core.DataBatch) (*core.DataBatch, e
 			podName := v.Labels[core.LabelPodName.Key]
 			pod, err := this.getPod(namespace, podName)
 			if err != nil {
-				glog.V(3).Infof("Failed to get pod %s from cache: %v", core.PodKey(namespace, podName), err)
+				klog.V(3).Infof("Failed to get pod %s from cache: %v", core.PodKey(namespace, podName), err)
 				continue
 			}
 			this.addPodInfo(k, v, pod, batch, newMs)
@@ -53,7 +53,7 @@ func (this *PodBasedEnricher) Process(batch *core.DataBatch) (*core.DataBatch, e
 			podName := v.Labels[core.LabelPodName.Key]
 			pod, err := this.getPod(namespace, podName)
 			if err != nil {
-				glog.V(3).Infof("Failed to get pod %s from cache: %v", core.PodKey(namespace, podName), err)
+				klog.V(3).Infof("Failed to get pod %s from cache: %v", core.PodKey(namespace, podName), err)
 				continue
 			}
 			this.addContainerInfo(k, v, pod, batch, newMs)
@@ -108,7 +108,7 @@ func (this *PodBasedEnricher) addContainerInfo(key string, containerMs *core.Met
 	if !oldfound {
 		_, newfound := newMs[podKey]
 		if !newfound {
-			glog.V(2).Infof("Pod %s not found, creating a stub", podKey)
+			klog.V(2).Infof("Pod %s not found, creating a stub", podKey)
 			podMs := &core.MetricSet{
 				MetricValues: make(map[string]core.MetricValue),
 				Labels: map[string]string{
@@ -147,7 +147,7 @@ func (this *PodBasedEnricher) addPodInfo(key string, podMs *core.MetricSet, pod 
 		if _, found := newMs[containerKey]; found {
 			continue
 		}
-		glog.V(2).Infof("Container %s not found, creating a stub", containerKey)
+		klog.V(2).Infof("Container %s not found, creating a stub", containerKey)
 		containerMs := &core.MetricSet{
 			MetricValues: make(map[string]core.MetricValue),
 			Labels: map[string]string{

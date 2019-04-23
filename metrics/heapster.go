@@ -29,7 +29,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/pflag"
 
@@ -53,9 +52,12 @@ import (
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/component-base/logs"
+	"k8s.io/klog"
 )
 
 func main() {
+	defer logs.FlushLogs()
+
 	opt := options.NewHeapsterRunOptions()
 	opt.AddFlags(pflag.CommandLine)
 
@@ -64,24 +66,21 @@ func main() {
 		os.Exit(0)
 	}
 
-	logs.InitLogs()
-	defer logs.FlushLogs()
-
 	labelCopier, err := util.NewLabelCopier(opt.LabelSeparator, opt.StoredLabels, opt.IgnoredLabels)
 	if err != nil {
-		glog.Fatalf("Failed to initialize label copier: %v", err)
+		klog.Fatalf("Failed to initialize label copier: %v", err)
 	}
 
 	setMaxProcs(opt)
-	glog.Infof(strings.Join(os.Args, " "))
-	glog.Infof("Heapster version %v", version.HeapsterVersion)
+	klog.Infof(strings.Join(os.Args, " "))
+	klog.Infof("Heapster version %v", version.HeapsterVersion)
 	if err := validateFlags(opt); err != nil {
-		glog.Fatal(err)
+		klog.Fatal(err)
 	}
 
 	kubernetesUrl, err := getKubernetesAddress(opt.Sources)
 	if err != nil {
-		glog.Fatalf("Failed to get kubernetes address: %v", err)
+		klog.Fatalf("Failed to get kubernetes address: %v", err)
 	}
 	sourceManager := createSourceManagerOrDie(opt.Sources)
 	sinkManager, metricSink, historicalSource := createAndInitSinksOrDie(opt.Sinks, opt.HistoricalSource, opt.SinkExportDataTimeout, opt.DisableMetricSink)
@@ -92,7 +91,7 @@ func main() {
 	man, err := manager.NewManager(sourceManager, dataProcessors, sinkManager,
 		opt.MetricResolution, manager.DefaultScrapeOffset, manager.DefaultMaxParallelism)
 	if err != nil {
-		glog.Fatalf("Failed to create main manager: %v", err)
+		klog.Fatalf("Failed to create main manager: %v", err)
 	}
 	man.Start()
 
@@ -107,7 +106,7 @@ func main() {
 	healthz.InstallHandler(mux, healthzChecker(metricSink))
 
 	addr := net.JoinHostPort(opt.Ip, strconv.Itoa(opt.Port))
-	glog.Infof("Starting heapster on port %d", opt.Port)
+	klog.Infof("Starting heapster on port %d", opt.Port)
 
 	if len(opt.TLSCertFile) > 0 && len(opt.TLSKeyFile) > 0 {
 		startSecureServing(opt, handler, promHandler, mux, addr)
@@ -115,7 +114,7 @@ func main() {
 		mux.Handle("/", handler)
 		mux.Handle("/metrics", promHandler)
 
-		glog.Fatal(http.ListenAndServe(addr, mux))
+		klog.Fatal(http.ListenAndServe(addr, mux))
 	}
 }
 func createAndRunAPIServer(opt *options.HeapsterRunOptions, metricSink *metricsink.MetricSink,
@@ -123,7 +122,7 @@ func createAndRunAPIServer(opt *options.HeapsterRunOptions, metricSink *metricsi
 
 	server, err := app.NewHeapsterApiServer(opt, metricSink, nodeLister, podLister)
 	if err != nil {
-		glog.Errorf("Could not create the API server: %v", err)
+		klog.Errorf("Could not create the API server: %v", err)
 		return
 	}
 
@@ -135,7 +134,7 @@ func createAndRunAPIServer(opt *options.HeapsterRunOptions, metricSink *metricsi
 			os.Exit(1)
 		}
 	}
-	glog.Infof("Starting Heapster API server...")
+	klog.Infof("Starting Heapster API server...")
 	go runApiServer(server)
 }
 
@@ -145,13 +144,13 @@ func startSecureServing(opt *options.HeapsterRunOptions, handler http.Handler, p
 	if len(opt.TLSClientCAFile) > 0 {
 		authPprofHandler, err := newAuthHandler(opt, handler)
 		if err != nil {
-			glog.Fatalf("Failed to create authorized pprof handler: %v", err)
+			klog.Fatalf("Failed to create authorized pprof handler: %v", err)
 		}
 		handler = authPprofHandler
 
 		authPromHandler, err := newAuthHandler(opt, promHandler)
 		if err != nil {
-			glog.Fatalf("Failed to create authorized prometheus handler: %v", err)
+			klog.Fatalf("Failed to create authorized prometheus handler: %v", err)
 		}
 		promHandler = authPromHandler
 	}
@@ -165,24 +164,24 @@ func startSecureServing(opt *options.HeapsterRunOptions, handler http.Handler, p
 			Handler:   mux,
 			TLSConfig: &tls.Config{ClientAuth: tls.RequestClientCert},
 		}
-		glog.Fatal(server.ListenAndServeTLS(opt.TLSCertFile, opt.TLSKeyFile))
+		klog.Fatal(server.ListenAndServeTLS(opt.TLSCertFile, opt.TLSKeyFile))
 	} else {
-		glog.Fatal(http.ListenAndServeTLS(address, opt.TLSCertFile, opt.TLSKeyFile, mux))
+		klog.Fatal(http.ListenAndServeTLS(address, opt.TLSCertFile, opt.TLSKeyFile, mux))
 	}
 }
 
 func createSourceManagerOrDie(src flags.Uris) core.MetricsSource {
 	if len(src) != 1 {
-		glog.Fatal("Wrong number of sources specified")
+		klog.Fatal("Wrong number of sources specified")
 	}
 	sourceFactory := sources.NewSourceFactory()
 	sourceProvider, err := sourceFactory.BuildAll(src)
 	if err != nil {
-		glog.Fatalf("Failed to create source provide: %v", err)
+		klog.Fatalf("Failed to create source provide: %v", err)
 	}
 	sourceManager, err := sources.NewSourceManager(sourceProvider, sources.DefaultMetricsScrapeTimeout)
 	if err != nil {
-		glog.Fatalf("Failed to create source manager: %v", err)
+		klog.Fatalf("Failed to create source manager: %v", err)
 	}
 	return sourceManager
 }
@@ -191,17 +190,17 @@ func createAndInitSinksOrDie(sinkAddresses flags.Uris, historicalSource string, 
 	sinksFactory := sinks.NewSinkFactory()
 	metricSink, sinkList, histSource := sinksFactory.BuildAll(sinkAddresses, historicalSource, disableMetricSink)
 	if metricSink == nil && !disableMetricSink {
-		glog.Fatal("Failed to create metric sink")
+		klog.Fatal("Failed to create metric sink")
 	}
 	if histSource == nil && len(historicalSource) > 0 {
-		glog.Fatal("Failed to use a sink as a historical metrics source")
+		klog.Fatal("Failed to use a sink as a historical metrics source")
 	}
 	for _, sink := range sinkList {
-		glog.Infof("Starting with %s", sink.Name())
+		klog.Infof("Starting with %s", sink.Name())
 	}
 	sinkManager, err := sinks.NewDataSinkManager(sinkList, sinkExportDataTimeout, sinks.DefaultSinkStopTimeout)
 	if err != nil {
-		glog.Fatalf("Failed to create sink manager: %v", err)
+		klog.Fatalf("Failed to create sink manager: %v", err)
 	}
 	return sinkManager, metricSink, histSource
 }
@@ -211,11 +210,11 @@ func getListersOrDie(kubernetesUrl *url.URL) (v1listers.PodLister, v1listers.Nod
 
 	podLister, err := getPodLister(kubeClient)
 	if err != nil {
-		glog.Fatalf("Failed to create podLister: %v", err)
+		klog.Fatalf("Failed to create podLister: %v", err)
 	}
 	nodeLister, _, err := util.GetNodeLister(kubeClient)
 	if err != nil {
-		glog.Fatalf("Failed to create nodeLister: %v", err)
+		klog.Fatalf("Failed to create nodeLister: %v", err)
 	}
 	return podLister, nodeLister
 }
@@ -223,7 +222,7 @@ func getListersOrDie(kubernetesUrl *url.URL) (v1listers.PodLister, v1listers.Nod
 func createKubeClientOrDie(kubernetesUrl *url.URL) *kube_client.Clientset {
 	kubeConfig, err := kube_config.GetKubeClientConfig(kubernetesUrl)
 	if err != nil {
-		glog.Fatalf("Failed to get client config: %v", err)
+		klog.Fatalf("Failed to get client config: %v", err)
 	}
 	return kube_client.NewForConfigOrDie(kubeConfig)
 }
@@ -236,13 +235,13 @@ func createDataProcessorsOrDie(kubernetesUrl *url.URL, podLister v1listers.PodLi
 
 	podBasedEnricher, err := processors.NewPodBasedEnricher(podLister, labelCopier)
 	if err != nil {
-		glog.Fatalf("Failed to create PodBasedEnricher: %v", err)
+		klog.Fatalf("Failed to create PodBasedEnricher: %v", err)
 	}
 	dataProcessors = append(dataProcessors, podBasedEnricher)
 
 	namespaceBasedEnricher, err := processors.NewNamespaceBasedEnricher(kubernetesUrl)
 	if err != nil {
-		glog.Fatalf("Failed to create NamespaceBasedEnricher: %v", err)
+		klog.Fatalf("Failed to create NamespaceBasedEnricher: %v", err)
 	}
 	dataProcessors = append(dataProcessors, namespaceBasedEnricher)
 
@@ -279,7 +278,7 @@ func createDataProcessorsOrDie(kubernetesUrl *url.URL, podLister v1listers.PodLi
 
 	nodeAutoscalingEnricher, err := processors.NewNodeAutoscalingEnricher(kubernetesUrl, labelCopier)
 	if err != nil {
-		glog.Fatalf("Failed to create NodeAutoscalingEnricher: %v", err)
+		klog.Fatalf("Failed to create NodeAutoscalingEnricher: %v", err)
 	}
 	dataProcessors = append(dataProcessors, nodeAutoscalingEnricher)
 	return dataProcessors
@@ -298,12 +297,12 @@ func healthzChecker(metricSink *metricsink.MetricSink) healthz.HealthzChecker {
 		}
 		if time.Since(batch.Timestamp) > maxMetricsDelay {
 			message := fmt.Sprintf("No current data batch available (latest: %s).", batch.Timestamp.String())
-			glog.Warningf(message)
+			klog.Warningf(message)
 			return errors.New(message)
 		}
 		if len(batch.MetricSets) < minMetricsCount {
 			message := fmt.Sprintf("Not enough metrics found in the latest data batch: %d (expected min. %d) %s", len(batch.MetricSets), minMetricsCount, batch.Timestamp.String())
-			glog.Warningf(message)
+			klog.Warningf(message)
 			return errors.New(message)
 		}
 		return nil
@@ -356,6 +355,6 @@ func setMaxProcs(opt *options.HeapsterRunOptions) {
 	// Check if the setting was successful.
 	actualNumProcs := runtime.GOMAXPROCS(0)
 	if actualNumProcs != numProcs {
-		glog.Warningf("Specified max procs of %d but using %d", numProcs, actualNumProcs)
+		klog.Warningf("Specified max procs of %d but using %d", numProcs, actualNumProcs)
 	}
 }

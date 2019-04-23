@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"sort"
 	"strings"
 )
@@ -132,7 +132,7 @@ func (formatter *EtsystatsdFormatter) formatUserLabels(appLabel string, customiz
 }
 
 func NewEtsystatsdFormatter() Formatter {
-	glog.V(2).Info("etsystatsd formatter is created")
+	klog.V(2).Info("etsystatsd formatter is created")
 	return &EtsystatsdFormatter{
 		delimReplacer: strings.NewReplacer(".", "_", "=", "_", "|", "_"),
 	}

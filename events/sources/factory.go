@@ -17,7 +17,7 @@ package sources
 import (
 	"fmt"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/common/flags"
 	"github.com/Stackdriver/heapster/events/core"
@@ -45,7 +45,7 @@ func (this *SourceFactory) BuildAll(uris flags.Uris) ([]core.EventSource, error)
 	for _, uri := range uris {
 		source, err := this.Build(uri)
 		if err != nil {
-			glog.Errorf("Failed to create %s: %v", uri.Key, err)
+			klog.Errorf("Failed to create %s: %v", uri.Key, err)
 		} else {
 			result = append(result, source)
 		}

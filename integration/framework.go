@@ -24,7 +24,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/glog"
 	"k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -33,6 +32,7 @@ import (
 	kclient "k8s.io/client-go/kubernetes"
 	kclientcmd "k8s.io/client-go/tools/clientcmd"
 	kclientcmdapi "k8s.io/client-go/tools/clientcmd/api"
+	"k8s.io/klog"
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 	// ensure the core apis are installed
 	_ "k8s.io/kubernetes/pkg/apis/core/install"
@@ -124,7 +124,7 @@ var (
 
 func exists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
-		glog.V(2).Infof("%q does not exist", path)
+		klog.V(2).Infof("%q does not exist", path)
 		return false
 	}
 	return true
@@ -160,7 +160,7 @@ func runKubeClusterCommand(kubeBaseDir, command string) ([]byte, error) {
 	env := os.Environ()
 	env = append(env, "KUBE_RUNTIME_CONFIG=--runtime-config=metrics.k8s.io/v1alpha1=true")
 	cmd.Env = env
-	glog.V(2).Infof("about to run %v", cmd)
+	klog.V(2).Infof("about to run %v", cmd)
 	return cmd.CombinedOutput()
 }
 
@@ -169,24 +169,24 @@ func setupNewCluster(kubeBaseDir string) error {
 	destroyCluster(kubeBaseDir)
 	out, err := runKubeClusterCommand(kubeBaseDir, cmd)
 	if err != nil {
-		glog.Errorf("failed to bring up cluster - %q\n%s", err, out)
+		klog.Errorf("failed to bring up cluster - %q\n%s", err, out)
 		return fmt.Errorf("failed to bring up cluster - %q", err)
 	}
-	glog.V(2).Info(string(out))
-	glog.V(2).Infof("Giving the cluster 30 sec to stabilize")
+	klog.V(2).Info(string(out))
+	klog.V(2).Infof("Giving the cluster 30 sec to stabilize")
 	time.Sleep(30 * time.Second)
 	return nil
 }
 
 func destroyCluster(kubeBaseDir string) error {
 	if kubeBaseDir == "" {
-		glog.Infof("Skipping cluster tear down since kubernetes repo base path is not set.")
+		klog.Infof("Skipping cluster tear down since kubernetes repo base path is not set.")
 		return nil
 	}
-	glog.V(1).Info("Bringing down any existing kube cluster")
+	klog.V(1).Info("Bringing down any existing kube cluster")
 	out, err := runKubeClusterCommand(kubeBaseDir, "kube-down.sh")
 	if err != nil {
-		glog.Errorf("failed to tear down cluster - %q\n%s", err, out)
+		klog.Errorf("failed to tear down cluster - %q\n%s", err, out)
 		return fmt.Errorf("failed to tear down kube cluster - %q", err)
 	}
 
@@ -198,7 +198,7 @@ func downloadRelease(workDir, version string) error {
 	downloadPath := filepath.Join(workDir, "kube")
 	// Format url.
 	downloadUrl := fmt.Sprintf(imageUrlTemplate, version)
-	glog.V(1).Infof("About to download kube release using url: %q", downloadUrl)
+	klog.V(1).Infof("About to download kube release using url: %q", downloadUrl)
 
 	// Download kube code and store it in a temp dir.
 	if err := exec.Command("wget", downloadUrl, "-O", downloadPath).Run(); err != nil {
@@ -237,10 +237,10 @@ func getKubeClient() (string, *kclient.Clientset, error) {
 }
 
 func validateCluster(baseDir string) bool {
-	glog.V(1).Info("validating existing cluster")
+	klog.V(1).Info("validating existing cluster")
 	out, err := runKubeClusterCommand(baseDir, "validate-cluster.sh")
 	if err != nil {
-		glog.V(1).Infof("cluster validation failed - %q\n %s", err, out)
+		klog.V(1).Infof("cluster validation failed - %q\n %s", err, out)
 		return false
 	}
 	return true
@@ -250,13 +250,13 @@ func requireNewCluster(baseDir, version string) bool {
 	// Setup kube client
 	_, kubeClient, err := getKubeClient()
 	if err != nil {
-		glog.V(1).Infof("kube client creation failed - %q", err)
+		klog.V(1).Infof("kube client creation failed - %q", err)
 		return true
 	}
-	glog.V(1).Infof("checking if existing cluster can be used")
+	klog.V(1).Infof("checking if existing cluster can be used")
 	versionInfo, err := kubeClient.ServerVersion()
 	if err != nil {
-		glog.V(1).Infof("failed to get kube version info - %q", err)
+		klog.V(1).Infof("failed to get kube version info - %q", err)
 		return true
 	}
 	return !strings.Contains(versionInfo.GitVersion, version)
@@ -276,7 +276,7 @@ func downloadAndSetupCluster(version string) (baseDir string, err error) {
 		if err := os.MkdirAll(tempDir, 0700); err != nil {
 			return "", fmt.Errorf("failed to create a temp dir at %s - %q", tempDir, err)
 		}
-		glog.V(1).Infof("Successfully setup work dir at %s", tempDir)
+		klog.V(1).Infof("Successfully setup work dir at %s", tempDir)
 	}
 
 	kubeBaseDir := filepath.Join(tempDir, "kubernetes")
@@ -288,21 +288,21 @@ func downloadAndSetupCluster(version string) (baseDir string, err error) {
 		if err := downloadRelease(tempDir, version); err != nil {
 			return "", err
 		}
-		glog.V(1).Infof("Successfully downloaded kubernetes release at %s", tempDir)
+		klog.V(1).Infof("Successfully downloaded kubernetes release at %s", tempDir)
 	}
 
 	// Disable monitoring
 	if err := disableClusterMonitoring(kubeBaseDir); err != nil {
 		return "", fmt.Errorf("failed to disable cluster monitoring in kube cluster config - %q", err)
 	}
-	glog.V(1).Info("Disabled cluster monitoring")
+	klog.V(1).Info("Disabled cluster monitoring")
 	if !requireNewCluster(kubeBaseDir, version) {
-		glog.V(1).Infof("skipping cluster setup since a cluster with required version already exists")
+		klog.V(1).Infof("skipping cluster setup since a cluster with required version already exists")
 		return kubeBaseDir, nil
 	}
 
 	// Setup kube cluster
-	glog.V(1).Infof("Setting up new kubernetes cluster version: %s", version)
+	klog.V(1).Infof("Setting up new kubernetes cluster version: %s", version)
 	if err := os.Setenv("KUBERNETES_SKIP_CONFIRM", "y"); err != nil {
 		return "", err
 	}
@@ -313,7 +313,7 @@ func downloadAndSetupCluster(version string) (baseDir string, err error) {
 		clusterReady := false
 		for i := 0; i < int(time.Minute/sleepDuration); i++ {
 			if !validateCluster(kubeBaseDir) {
-				glog.Infof("Retry validation after %v seconds.", sleepDuration/time.Second)
+				klog.Infof("Retry validation after %v seconds.", sleepDuration/time.Second)
 				time.Sleep(sleepDuration)
 			} else {
 				clusterReady = true
@@ -324,7 +324,7 @@ func downloadAndSetupCluster(version string) (baseDir string, err error) {
 			return "", fmt.Errorf("failed to setup cluster - %q", err)
 		}
 	}
-	glog.V(1).Infof("Successfully setup new kubernetes cluster version %s", version)
+	klog.V(1).Infof("Successfully setup new kubernetes cluster version %s", version)
 
 	return kubeBaseDir, nil
 }
@@ -333,7 +333,7 @@ func newKubeFramework(version string) (kubeFramework, error) {
 	// Install gcloud components.
 	// TODO(piosz): move this to the image creation
 	cmd := exec.Command("gcloud", "components", "install", "alpha", "beta", "kubectl", "--quiet")
-	glog.V(2).Infof("about to install gcloud components")
+	klog.V(2).Infof("about to install gcloud components")
 	if o, err := cmd.CombinedOutput(); err != nil {
 		return nil, fmt.Errorf("Error while installing gcloud components: %v\n%s", err, o)
 	}
@@ -342,7 +342,7 @@ func newKubeFramework(version string) (kubeFramework, error) {
 	kubeBaseDir := ""
 	if version != "" {
 		if len(strings.Split(version, ".")) != 3 {
-			glog.Warningf("Using not stable version - %q", version)
+			klog.Warningf("Using not stable version - %q", version)
 		}
 		kubeBaseDir, err = downloadAndSetupCluster(version)
 		if err != nil {
@@ -460,17 +460,17 @@ func (self *realKubeFramework) DeleteNs(ns string) error {
 
 	_, err := self.kubeClient.CoreV1().Namespaces().Get(ns, metav1.GetOptions{})
 	if err != nil {
-		glog.V(0).Infof("Cannot get namespace %q. Skipping deletion: %s", ns, err)
+		klog.V(0).Infof("Cannot get namespace %q. Skipping deletion: %s", ns, err)
 		return nil
 	}
-	glog.V(0).Infof("Deleting namespace %s", ns)
+	klog.V(0).Infof("Deleting namespace %s", ns)
 	self.kubeClient.CoreV1().Namespaces().Delete(ns, nil)
 
 	for i := 0; i < 5; i++ {
-		glog.V(0).Infof("Checking for namespace %s", ns)
+		klog.V(0).Infof("Checking for namespace %s", ns)
 		_, err := self.kubeClient.CoreV1().Namespaces().Get(ns, metav1.GetOptions{})
 		if err != nil {
-			glog.V(0).Infof("%s doesn't exist", ns)
+			klog.V(0).Infof("%s doesn't exist", ns)
 			return nil
 		}
 		time.Sleep(10 * time.Second)
@@ -520,7 +520,7 @@ func (self *realKubeFramework) GetPodsRunningOnNodes() ([]v1.Pod, error) {
 }
 
 func getRunningPods(includeMaster bool, kubeClient *kclient.Clientset) ([]v1.Pod, error) {
-	glog.V(0).Infof("Getting running pods")
+	klog.V(0).Infof("Getting running pods")
 	podList, err := kubeClient.CoreV1().Pods(v1.NamespaceAll).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -553,14 +553,14 @@ func (self *realKubeFramework) GetRunningPodNames() ([]string, error) {
 }
 
 func (rkf *realKubeFramework) WaitUntilPodRunning(ns string, podLabels map[string]string, timeout time.Duration) error {
-	glog.V(2).Infof("Waiting for pod %v in %s...", podLabels, ns)
+	klog.V(2).Infof("Waiting for pod %v in %s...", podLabels, ns)
 	podsInterface := rkf.Client().CoreV1().Pods(ns)
 	for i := 0; i < int(timeout/time.Second); i++ {
 		podList, err := podsInterface.List(metav1.ListOptions{
 			LabelSelector: labels.Set(podLabels).AsSelector().String(),
 		})
 		if err != nil {
-			glog.V(1).Info(err)
+			klog.V(1).Info(err)
 			return err
 		}
 		if len(podList.Items) > 0 {
@@ -575,7 +575,7 @@ func (rkf *realKubeFramework) WaitUntilPodRunning(ns string, podLabels map[strin
 }
 
 func (rkf *realKubeFramework) WaitUntilServiceActive(svc *v1.Service, timeout time.Duration) error {
-	glog.V(2).Infof("Waiting for endpoints in service %s/%s", svc.Namespace, svc.Name)
+	klog.V(2).Infof("Waiting for endpoints in service %s/%s", svc.Namespace, svc.Name)
 	for i := 0; i < int(timeout/time.Second); i++ {
 		e, err := rkf.Client().CoreV1().Endpoints(svc.Namespace).Get(svc.Name, metav1.GetOptions{})
 		if err != nil {

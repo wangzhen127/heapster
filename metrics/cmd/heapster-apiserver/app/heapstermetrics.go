@@ -15,7 +15,7 @@
 package app
 
 import (
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/options"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
@@ -50,7 +50,7 @@ func installMetricsAPIs(s *options.HeapsterRunOptions, g *genericapiserver.Gener
 	apiGroupInfo.VersionedResourcesStorageMap[v1alpha1.SchemeGroupVersion.Version] = heapsterResources
 
 	if err := g.InstallAPIGroup(&apiGroupInfo); err != nil {
-		glog.Fatalf("Error in registering group versions: %v", err)
+		klog.Fatalf("Error in registering group versions: %v", err)
 	}
 }
 

@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 const maxBatchSize = 100
@@ -141,7 +141,7 @@ func (c *HoneycombClient) makeRequest(body io.Reader) error {
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		glog.Warningf("Failed to send event: %v", err)
+		klog.Warningf("Failed to send event: %v", err)
 		return err
 	}
 	defer resp.Body.Close()

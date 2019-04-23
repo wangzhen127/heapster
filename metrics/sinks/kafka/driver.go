@@ -21,7 +21,7 @@ import (
 
 	kafka_common "github.com/Stackdriver/heapster/common/kafka"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type KafkaSinkPoint struct {
@@ -56,7 +56,7 @@ func (sink *kafkaSink) ExportData(dataBatch *core.DataBatch) {
 			}
 			err := sink.ProduceKafkaMessage(point)
 			if err != nil {
-				glog.Errorf("Failed to produce metric message: %s", err)
+				klog.Errorf("Failed to produce metric message: %s", err)
 			}
 		}
 		for _, metric := range metricSet.LabeledMetrics {
@@ -77,7 +77,7 @@ func (sink *kafkaSink) ExportData(dataBatch *core.DataBatch) {
 			}
 			err := sink.ProduceKafkaMessage(point)
 			if err != nil {
-				glog.Errorf("Failed to produce metric message: %s", err)
+				klog.Errorf("Failed to produce metric message: %s", err)
 			}
 		}
 	}

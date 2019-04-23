@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/Stackdriver/heapster/events/manager"
-	"github.com/golang/glog"
 	"k8s.io/apiserver/pkg/server/healthz"
+	"k8s.io/klog"
 )
 
 const (
@@ -38,7 +38,7 @@ func healthzChecker() healthz.HealthzChecker {
 				MaxEventsScrapeDelay,
 				manager.LatestScrapeTime,
 			)
-			glog.Warning(msg)
+			klog.Warning(msg)
 			return errors.New(msg)
 		}
 

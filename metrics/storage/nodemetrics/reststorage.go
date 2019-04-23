@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
@@ -85,7 +85,7 @@ func (m *MetricStorage) List(ctx context.Context, options *metainternalversion.L
 	})
 	if err != nil {
 		errMsg := fmt.Errorf("Error while listing nodes: %v", err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		return &metrics.NodeMetricsList{}, errMsg
 	}
 
@@ -133,4 +133,8 @@ func (m *MetricStorage) getNodeMetrics(node string) *metrics.NodeMetrics {
 		Window:    metav1.Duration{Duration: time.Minute},
 		Usage:     usage,
 	}
+}
+
+func (m *MetricStorage) NamespaceScoped() bool {
+	return false
 }

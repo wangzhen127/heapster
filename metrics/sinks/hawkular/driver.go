@@ -24,8 +24,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/golang/glog"
 	"github.com/hawkular/hawkular-client-go/metrics"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 	kube_client "k8s.io/client-go/rest"
@@ -122,7 +122,7 @@ func (h *hawkularSink) ExportData(db *core.DataBatch) {
 				mH, err := h.pointToLabeledMetricHeader(ms, labeledMetric, db.Timestamp)
 				if err != nil {
 					// One transformation error should not prevent the whole process
-					glog.Errorf(err.Error())
+					klog.Errorf(err.Error())
 					continue
 				}
 
@@ -135,7 +135,7 @@ func (h *hawkularSink) ExportData(db *core.DataBatch) {
 		}
 		h.sendData(tmhs, wg) // Send to a limited channel? Only batches.. egg.
 		wg.Wait()
-		// glog.V(4).Infof("ExportData updated %d tags, total size of cached tags is %d\n", updatedTags, len(h.reg))
+		// klog.V(4).Infof("ExportData updated %d tags, total size of cached tags is %d\n", updatedTags, len(h.reg))
 	}
 	h.expireCache(h.runId)
 }
@@ -338,6 +338,6 @@ func (h *hawkularSink) init() error {
 
 	h.client = c
 
-	glog.Infof("Initialised Hawkular Sink with parameters %v", p)
+	klog.Infof("Initialised Hawkular Sink with parameters %v", p)
 	return nil
 }

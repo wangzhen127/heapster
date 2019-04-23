@@ -17,7 +17,7 @@ package statsd
 import (
 	"fmt"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"net/url"
 	"strconv"
 	"strings"
@@ -96,12 +96,12 @@ func getConfig(uri *url.URL) (cfg statsdConfig, err error) {
 		case "upperCamelCase":
 			labelStyle = SnakeToUpperCamel
 		default:
-			glog.Errorf("invalid labelStyle - %s", opts["labelStyle"][0])
+			klog.Errorf("invalid labelStyle - %s", opts["labelStyle"][0])
 		}
 	}
 	labelCustomizer := LabelCustomizer{config.renameLabels, labelStyle}
 	config.customizeLabel = labelCustomizer.Customize
-	glog.Infof("statsd metrics sink using configuration : %+v", config)
+	klog.Infof("statsd metrics sink using configuration : %+v", config)
 	return config, nil
 }
 
@@ -129,7 +129,7 @@ func (sink *statsdSink) ExportData(dataBatch *core.DataBatch) {
 		for metricName, metricValue := range metricSet.MetricValues {
 			tmpstr, err = sink.formatter.Format(sink.config.prefix, metricName, metricSetLabels, sink.config.customizeLabel, metricValue)
 			if err != nil {
-				glog.Errorf("statsd metrics sink - failed to format metrics : %s", err.Error())
+				klog.Errorf("statsd metrics sink - failed to format metrics : %s", err.Error())
 				continue
 			}
 			metrics = append(metrics, tmpstr)
@@ -147,16 +147,16 @@ func (sink *statsdSink) ExportData(dataBatch *core.DataBatch) {
 			}
 			tmpstr, err = sink.formatter.Format(sink.config.prefix, metric.Name, labels, sink.config.customizeLabel, metric.MetricValue)
 			if err != nil {
-				glog.Errorf("statsd metrics sink - failed to format labeled metrics : %v", err)
+				klog.Errorf("statsd metrics sink - failed to format labeled metrics : %v", err)
 				continue
 			}
 			metrics = append(metrics, tmpstr)
 		}
 	}
-	glog.V(5).Infof("Sending metrics --- %s", metrics)
+	klog.V(5).Infof("Sending metrics --- %s", metrics)
 	err = sink.client.send(metrics)
 	if err != nil {
-		glog.Errorf("statsd metrics sink - failed to send some metrics : %v", err)
+		klog.Errorf("statsd metrics sink - failed to send some metrics : %v", err)
 	}
 }
 
@@ -165,7 +165,7 @@ func (sink *statsdSink) Name() string {
 }
 
 func (sink *statsdSink) Stop() {
-	glog.V(2).Info("statsd metrics sink is stopping")
+	klog.V(2).Info("statsd metrics sink is stopping")
 	sink.client.close()
 }
 
@@ -178,7 +178,7 @@ func NewStatsdSinkWithClient(uri *url.URL, client statsdClient) (sink core.DataS
 	if err != nil {
 		return nil, err
 	}
-	glog.V(2).Info("statsd metrics sink is created")
+	klog.V(2).Info("statsd metrics sink is created")
 	return &statsdSink{
 		config:    config,
 		formatter: formatter,

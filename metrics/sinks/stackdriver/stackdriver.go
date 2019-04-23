@@ -28,7 +28,6 @@ import (
 	sd_api "cloud.google.com/go/monitoring/apiv3"
 	gce_util "github.com/Stackdriver/heapster/common/gce"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
 	google_proto "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/prometheus/client_golang/prometheus"
 	"google.golang.org/genproto/googleapis/api/metric"
@@ -36,6 +35,7 @@ import (
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	grpc_codes "google.golang.org/grpc/codes"
 	grpc_status "google.golang.org/grpc/status"
+	"k8s.io/klog"
 )
 
 const (
@@ -126,7 +126,7 @@ func (sink *StackdriverSink) processMetrics(metricValues map[string]core.MetricV
 func (sink *StackdriverSink) ExportData(dataBatch *core.DataBatch) {
 	// Make sure we don't export metrics too often.
 	if dataBatch.Timestamp.Before(sink.lastExportTime.Add(sink.minInterval)) {
-		glog.V(2).Infof("Skipping batch from %s because there hasn't passed %s from last export time %s", dataBatch.Timestamp, sink.minInterval, sink.lastExportTime)
+		klog.V(2).Infof("Skipping batch from %s because there hasn't passed %s from last export time %s", dataBatch.Timestamp, sink.minInterval, sink.lastExportTime)
 		return
 	}
 	sink.lastExportTime = dataBatch.Timestamp
@@ -141,7 +141,7 @@ func (sink *StackdriverSink) ExportData(dataBatch *core.DataBatch) {
 		}
 
 		if metricSet.CollectionStartTime.IsZero() {
-			glog.V(2).Infof("Skipping incorrect metric set %s because collection start time is zero", key)
+			klog.V(2).Infof("Skipping incorrect metric set %s because collection start time is zero", key)
 			continue
 		}
 
@@ -222,7 +222,7 @@ forloop:
 		case requestQueue <- r:
 			// yet another request added to queue
 		case <-timeoutSending:
-			glog.Warningf("Timeout while exporting metrics to Stackdriver. Dropping %d out of %d requests.", len(requests)-i, len(requests))
+			klog.Warningf("Timeout while exporting metrics to Stackdriver. Dropping %d out of %d requests.", len(requests)-i, len(requests))
 			// TODO(piosz): consider cancelling requests in flight
 			// Report dropped requests in metrics.
 			for _, req := range requests[i:] {
@@ -244,11 +244,11 @@ forloop:
 		case <-completedQueue:
 			workersCompleted++
 			if workersCompleted == workers {
-				glog.V(4).Infof("All %d workers successfully finished sending requests to SD.", workersCompleted)
+				klog.V(4).Infof("All %d workers successfully finished sending requests to SD.", workersCompleted)
 				return
 			}
 		case <-timeoutCompleted:
-			glog.Warningf("Only %d out of %d workers successfully finished sending requests to SD. Some metrics might be lost.", workersCompleted, workers)
+			klog.Warningf("Only %d out of %d workers successfully finished sending requests to SD. Some metrics might be lost.", workersCompleted, workers)
 			return
 		}
 	}
@@ -267,7 +267,7 @@ func (sink *StackdriverSink) requestSender(reqQueue chan *monitoringpb.CreateTim
 func marshalRequestAndLog(printer func([]byte), req *monitoringpb.CreateTimeSeriesRequest) {
 	reqJson, errJson := json.Marshal(req)
 	if errJson != nil {
-		glog.Errorf("Couldn't marshal Stackdriver request %v", errJson)
+		klog.Errorf("Couldn't marshal Stackdriver request %v", errJson)
 	} else {
 		printer(reqJson)
 	}
@@ -279,11 +279,11 @@ func (sink *StackdriverSink) sendOneRequest(req *monitoringpb.CreateTimeSeriesRe
 
 	var responseCode grpc_codes.Code
 	if err != nil {
-		glog.Warningf("Error while sending request to Stackdriver %v", err)
+		klog.Warningf("Error while sending request to Stackdriver %v", err)
 		// Convert request to json and log it, but only if logging level is equal to 2 or more.
-		if glog.V(2) {
+		if klog.V(2) {
 			marshalRequestAndLog(func(reqJson []byte) {
-				glog.V(2).Infof("The request was: %s", reqJson)
+				klog.V(2).Infof("The request was: %s", reqJson)
 			}, req)
 		}
 		if status, ok := grpc_status.FromError(err); ok {
@@ -293,9 +293,9 @@ func (sink *StackdriverSink) sendOneRequest(req *monitoringpb.CreateTimeSeriesRe
 		}
 	} else {
 		// Convert request to json and log it, but only if logging level is equal to 10 or more.
-		if glog.V(10) {
+		if klog.V(10) {
 			marshalRequestAndLog(func(reqJson []byte) {
-				glog.V(10).Infof("Stackdriver request sent: %s", reqJson)
+				klog.V(10).Infof("Stackdriver request sent: %s", reqJson)
 			}, req)
 		}
 		responseCode = grpc_codes.OK
@@ -373,7 +373,7 @@ func CreateStackdriverSink(uri *url.URL) (core.DataSink, error) {
 		// Detect zone for old resource model
 		heapsterZone, err = gce.Zone()
 		if err != nil {
-			glog.Warningf("Zone could not be discovered using the GCE Metadata Server: %s", err)
+			klog.Warningf("Zone could not be discovered using the GCE Metadata Server: %s", err)
 
 			if useOldResourceModel {
 				return nil, err
@@ -382,24 +382,24 @@ func CreateStackdriverSink(uri *url.URL) (core.DataSink, error) {
 
 		if useNewResourceModel {
 			if clusterName == "" {
-				glog.Info("An empty cluster name has been provided, checking the GCE Metadata Server to try to auto-detect.")
+				klog.Info("An empty cluster name has been provided, checking the GCE Metadata Server to try to auto-detect.")
 
 				clusterName, err = gce.InstanceAttributeValue("cluster-name")
 				if err == nil {
-					glog.Infof("Discovered '%s' as the cluster name from the GCE Metadata Server.", clusterName)
+					klog.Infof("Discovered '%s' as the cluster name from the GCE Metadata Server.", clusterName)
 				} else {
-					glog.Warningf("Cluster name could not be discovered using the GCE Metadata Server: %s", err)
+					klog.Warningf("Cluster name could not be discovered using the GCE Metadata Server: %s", err)
 				}
 			}
 
 			if clusterLocation == "" {
-				glog.Info("An empty cluster location has been provided, checking the GCE Metadata Server to try to auto-detect.")
+				klog.Info("An empty cluster location has been provided, checking the GCE Metadata Server to try to auto-detect.")
 
 				clusterLocation, err = gce.InstanceAttributeValue("cluster-location")
 				if err == nil {
-					glog.Infof("Discovered '%s' as the cluster location from the GCE Metadata Server.", clusterLocation)
+					klog.Infof("Discovered '%s' as the cluster location from the GCE Metadata Server.", clusterLocation)
 				} else {
-					glog.Warningf("Cluster location could not be discovered using the GCE Metadata Server: %s", err)
+					klog.Warningf("Cluster location could not be discovered using the GCE Metadata Server: %s", err)
 				}
 			}
 		}
@@ -415,11 +415,11 @@ func CreateStackdriverSink(uri *url.URL) (core.DataSink, error) {
 
 	if useNewResourceModel {
 		if clusterName == "" {
-			glog.Warning("Cluster name required but not provided, using empty cluster name.")
+			klog.Warning("Cluster name required but not provided, using empty cluster name.")
 		}
 
 		if clusterLocation == "" {
-			glog.Warning("Cluster location required with new resource model but not provided. Falling back to the zone where Heapster runs.")
+			klog.Warning("Cluster location required with new resource model but not provided. Falling back to the zone where Heapster runs.")
 			clusterLocation = heapsterZone
 		}
 	}
@@ -448,7 +448,7 @@ func CreateStackdriverSink(uri *url.URL) (core.DataSink, error) {
 	prometheus.MustRegister(timeseriesSent)
 	prometheus.MustRegister(requestLatency)
 
-	glog.Infof("Created Stackdriver sink")
+	klog.Infof("Created Stackdriver sink")
 
 	return sink, nil
 }
@@ -557,7 +557,7 @@ func (sink *StackdriverSink) LegacyTranslateLabeledMetric(timestamp time.Time, l
 func (sink *StackdriverSink) LegacyTranslateMetric(timestamp time.Time, labels map[string]string, name string, value core.MetricValue, collectionStartTime time.Time) *monitoringpb.TimeSeries {
 	resourceLabels := sink.legacyGetResourceLabels(labels)
 	if !collectionStartTime.Before(timestamp) {
-		glog.V(4).Infof("Error translating metric %v for pod %v: batch timestamp %v earlier than pod create time %v", name, labels["pod_name"], timestamp, collectionStartTime)
+		klog.V(4).Infof("Error translating metric %v for pod %v: batch timestamp %v earlier than pod create time %v", name, labels["pod_name"], timestamp, collectionStartTime)
 		return nil
 	}
 	switch name {
@@ -684,7 +684,7 @@ func (sink *StackdriverSink) TranslateLabeledMetric(timestamp time.Time, labels 
 
 func (sink *StackdriverSink) TranslateMetric(timestamp time.Time, labels map[string]string, name string, value core.MetricValue, collectionStartTime time.Time, entityCreateTime time.Time) *monitoringpb.TimeSeries {
 	if !collectionStartTime.Before(timestamp) {
-		glog.V(4).Infof("Error translating metric %v for pod %v: batch timestamp %v earlier than pod create time %v", name, labels["pod_name"], timestamp, collectionStartTime)
+		klog.V(4).Infof("Error translating metric %v for pod %v: batch timestamp %v earlier than pod create time %v", name, labels["pod_name"], timestamp, collectionStartTime)
 		return nil
 	}
 	switch labels["type"] {
@@ -743,7 +743,7 @@ func (sink *StackdriverSink) TranslateMetric(timestamp time.Time, labels map[str
 
 		case core.MetricRestartCount.MetricDescriptor.Name:
 			if entityCreateTime.IsZero() {
-				glog.V(2).Infof("Skipping restart_count metric for container %s because entity create time is zero", core.PodContainerKey(containerLabels["namespace_name"], containerLabels["pod_name"], containerLabels["container_name"]))
+				klog.V(2).Infof("Skipping restart_count metric for container %s because entity create time is zero", core.PodContainerKey(containerLabels["namespace_name"], containerLabels["pod_name"], containerLabels["container_name"]))
 				return nil
 			}
 			point := sink.intPoint(timestamp, entityCreateTime, value.IntValue)

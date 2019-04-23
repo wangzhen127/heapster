@@ -20,7 +20,7 @@ import (
 	"sort"
 
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type LogSink struct {
@@ -78,7 +78,7 @@ func batchToString(batch *core.DataBatch) string {
 }
 
 func (this *LogSink) ExportData(batch *core.DataBatch) {
-	glog.Info(batchToString(batch))
+	klog.Info(batchToString(batch))
 }
 
 func NewLogSink() *LogSink {

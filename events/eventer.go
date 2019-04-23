@@ -33,8 +33,8 @@ import (
 	"github.com/Stackdriver/heapster/events/sinks"
 	"github.com/Stackdriver/heapster/events/sources"
 	"github.com/Stackdriver/heapster/version"
-	"github.com/golang/glog"
 	"k8s.io/component-base/logs"
+	"k8s.io/klog"
 )
 
 var (
@@ -65,48 +65,48 @@ func main() {
 
 	setMaxProcs()
 
-	glog.Infof(strings.Join(os.Args, " "))
-	glog.Infof("Eventer version %v", version.HeapsterVersion)
+	klog.Infof(strings.Join(os.Args, " "))
+	klog.Infof("Eventer version %v", version.HeapsterVersion)
 	if err := validateFlags(); err != nil {
-		glog.Fatal(err)
+		klog.Fatal(err)
 	}
 
 	// sources
 	if len(argSources) != 1 {
-		glog.Fatal("Wrong number of sources specified")
+		klog.Fatal("Wrong number of sources specified")
 	}
 	sourceFactory := sources.NewSourceFactory()
 	sources, err := sourceFactory.BuildAll(argSources)
 	if err != nil {
-		glog.Fatalf("Failed to create sources: %v", err)
+		klog.Fatalf("Failed to create sources: %v", err)
 	}
 	if len(sources) != 1 {
-		glog.Fatal("Requires exactly 1 source")
+		klog.Fatal("Requires exactly 1 source")
 	}
 
 	// sinks
 	sinksFactory := sinks.NewSinkFactory()
 	sinkList := sinksFactory.BuildAll(argSinks)
 	if len([]flags.Uri(argSinks)) != 0 && len(sinkList) == 0 {
-		glog.Fatal("No available sink to use")
+		klog.Fatal("No available sink to use")
 	}
 
 	for _, sink := range sinkList {
-		glog.Infof("Starting with %s sink", sink.Name())
+		klog.Infof("Starting with %s sink", sink.Name())
 	}
 	sinkManager, err := sinks.NewEventSinkManager(sinkList, sinks.DefaultSinkExportEventsTimeout, sinks.DefaultSinkStopTimeout)
 	if err != nil {
-		glog.Fatalf("Failed to create sink manager: %v", err)
+		klog.Fatalf("Failed to create sink manager: %v", err)
 	}
 
 	// main manager
 	manager, err := manager.NewManager(sources[0], sinkManager, *argFrequency)
 	if err != nil {
-		glog.Fatalf("Failed to create main manager: %v", err)
+		klog.Fatalf("Failed to create main manager: %v", err)
 	}
 
 	manager.Start()
-	glog.Infof("Starting eventer")
+	klog.Infof("Starting eventer")
 
 	go startHTTPServer()
 
@@ -114,9 +114,9 @@ func main() {
 }
 
 func startHTTPServer() {
-	glog.Info("Starting eventer http service")
+	klog.Info("Starting eventer http service")
 
-	glog.Fatal(http.ListenAndServe(net.JoinHostPort(*argHealthzIP, strconv.Itoa(int(*argHealthzPort))), nil))
+	klog.Fatal(http.ListenAndServe(net.JoinHostPort(*argHealthzIP, strconv.Itoa(int(*argHealthzPort))), nil))
 }
 
 func validateFlags() error {
@@ -148,6 +148,6 @@ func setMaxProcs() {
 	// Check if the setting was successful.
 	actualNumProcs := runtime.GOMAXPROCS(0)
 	if actualNumProcs != numProcs {
-		glog.Warningf("Specified max procs of %d but using %d", numProcs, actualNumProcs)
+		klog.Warningf("Specified max procs of %d but using %d", numProcs, actualNumProcs)
 	}
 }

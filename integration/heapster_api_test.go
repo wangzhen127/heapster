@@ -26,13 +26,13 @@ import (
 
 	api_v1 "github.com/Stackdriver/heapster/metrics/api/v1/types"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
 	"github.com/stretchr/testify/require"
 	kube_v1 "k8s.io/api/core/v1"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/sets"
+	"k8s.io/klog"
 	metrics_api "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
 )
 
@@ -57,18 +57,18 @@ var (
 )
 
 func deleteAll(fm kubeFramework, ns string, service *kube_v1.Service, rc *kube_v1.ReplicationController) error {
-	glog.V(2).Infof("Deleting ns %s...", ns)
+	klog.V(2).Infof("Deleting ns %s...", ns)
 	err := fm.DeleteNs(ns)
 	if err != nil {
-		glog.V(2).Infof("Failed to delete %s", ns)
+		klog.V(2).Infof("Failed to delete %s", ns)
 		return err
 	}
-	glog.V(2).Infof("Deleted ns %s.", ns)
+	klog.V(2).Infof("Deleted ns %s.", ns)
 	return nil
 }
 
 func createAll(fm kubeFramework, ns string, service **kube_v1.Service, rc **kube_v1.ReplicationController) error {
-	glog.V(2).Infof("Creating ns %s...", ns)
+	klog.V(2).Infof("Creating ns %s...", ns)
 	namespace := kube_v1.Namespace{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Namespace",
@@ -79,39 +79,39 @@ func createAll(fm kubeFramework, ns string, service **kube_v1.Service, rc **kube
 		},
 	}
 	if _, err := fm.CreateNs(&namespace); err != nil {
-		glog.V(2).Infof("Failed to create ns: %v", err)
+		klog.V(2).Infof("Failed to create ns: %v", err)
 		return err
 	}
 
-	glog.V(2).Infof("Created ns %s.", ns)
+	klog.V(2).Infof("Created ns %s.", ns)
 
-	glog.V(2).Infof("Creating rc %s/%s...", ns, (*rc).Name)
+	klog.V(2).Infof("Creating rc %s/%s...", ns, (*rc).Name)
 	if newRc, err := fm.CreateRC(ns, *rc); err != nil {
-		glog.V(2).Infof("Failed to create rc: %v", err)
+		klog.V(2).Infof("Failed to create rc: %v", err)
 		return err
 	} else {
 		*rc = newRc
 	}
-	glog.V(2).Infof("Created rc %s/%s.", ns, (*rc).Name)
+	klog.V(2).Infof("Created rc %s/%s.", ns, (*rc).Name)
 
-	glog.V(2).Infof("Creating service %s/%s...", ns, (*service).Name)
+	klog.V(2).Infof("Creating service %s/%s...", ns, (*service).Name)
 	if newSvc, err := fm.CreateService(ns, *service); err != nil {
-		glog.V(2).Infof("Failed to create service: %v", err)
+		klog.V(2).Infof("Failed to create service: %v", err)
 		return err
 	} else {
 		*service = newSvc
 	}
-	glog.V(2).Infof("Created service %s/%s.", ns, (*service).Name)
+	klog.V(2).Infof("Created service %s/%s.", ns, (*service).Name)
 
 	return nil
 }
 
 func removeHeapsterImage(fm kubeFramework, zone string) error {
-	glog.V(2).Infof("Removing heapster image.")
+	klog.V(2).Infof("Removing heapster image.")
 	if err := removeDockerImage(*heapsterImage); err != nil {
-		glog.Errorf("Failed to remove Heapster image: %v", err)
+		klog.Errorf("Failed to remove Heapster image: %v", err)
 	} else {
-		glog.V(2).Infof("Heapster image removed.")
+		klog.V(2).Infof("Heapster image removed.")
 	}
 	if nodes, err := fm.GetNodeNames(); err == nil {
 		for _, node := range nodes {
@@ -119,13 +119,13 @@ func removeHeapsterImage(fm kubeFramework, zone string) error {
 			cleanupRemoteHost(host, zone)
 		}
 	} else {
-		glog.Errorf("failed to cleanup nodes - %v", err)
+		klog.Errorf("failed to cleanup nodes - %v", err)
 	}
 	return nil
 }
 
 func buildAndPushHeapsterImage(hostnames []string, zone string) error {
-	glog.V(2).Info("Building and pushing Heapster image...")
+	klog.V(2).Info("Building and pushing Heapster image...")
 	curwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func buildAndPushHeapsterImage(hostnames []string, zone string) error {
 			return err
 		}
 	}
-	glog.V(2).Info("Heapster image pushed.")
+	klog.V(2).Info("Heapster image pushed.")
 	return os.Chdir(curwd)
 }
 
@@ -172,9 +172,9 @@ func setupHeapsterServiceAccount(fm kubeFramework) error {
 		return fmt.Errorf("failed to parse heapster serviceaccount - %v", err)
 	}
 
-	glog.V(2).Infof("Creating serviceaccount %s/%s...", (*sa).Namespace, (*sa).Name)
+	klog.V(2).Infof("Creating serviceaccount %s/%s...", (*sa).Namespace, (*sa).Name)
 	if err := fm.CreateServiceAccount(sa); err != nil {
-		glog.V(2).Infof("Failed to create serviceaccount: %v", err)
+		klog.V(2).Infof("Failed to create serviceaccount: %v", err)
 		return err
 	}
 
@@ -187,9 +187,9 @@ func setupHeapsterRBAC(fm kubeFramework) error {
 		return fmt.Errorf("failed to parse heapster rbac - %v", err)
 	}
 
-	glog.V(2).Infof("Creating rbac %s...", (*rbac).Name)
+	klog.V(2).Infof("Creating rbac %s...", (*rbac).Name)
 	if err := fm.CreateRBAC(rbac); err != nil {
-		glog.V(2).Infof("Failed to create rbac: %v", err)
+		klog.V(2).Infof("Failed to create rbac: %v", err)
 		return err
 	}
 
@@ -234,7 +234,7 @@ func getTimeseries(fm kubeFramework, svc *kube_v1.Service) ([]*api_v1.Timeseries
 	}
 	var timeseries []*api_v1.Timeseries
 	if err := json.Unmarshal(body, &timeseries); err != nil {
-		glog.V(2).Infof("Timeseries error: %v %v", err, string(body))
+		klog.V(2).Infof("Timeseries error: %v %v", err, string(body))
 		return nil, err
 	}
 	return timeseries, nil
@@ -253,7 +253,7 @@ func getSchema(fm kubeFramework, svc *kube_v1.Service) (*api_v1.TimeseriesSchema
 	}
 	var timeseriesSchema api_v1.TimeseriesSchema
 	if err := json.Unmarshal(body, &timeseriesSchema); err != nil {
-		glog.V(2).Infof("Metrics schema error: %v  %v", err, string(body))
+		klog.V(2).Infof("Metrics schema error: %v  %v", err, string(body))
 		return nil, err
 	}
 	return &timeseriesSchema, nil
@@ -287,13 +287,13 @@ func runMetricExportTest(fm kubeFramework, svc *kube_v1.Service) error {
 	for _, pod := range podList {
 		expectedPods = append(expectedPods, pod.Name)
 	}
-	glog.V(0).Infof("Expected pods: %v", expectedPods)
+	klog.V(0).Infof("Expected pods: %v", expectedPods)
 
 	expectedNodes, err := fm.GetNodeNames()
 	if err != nil {
 		return err
 	}
-	glog.V(0).Infof("Expected nodes: %v", expectedNodes)
+	klog.V(0).Infof("Expected nodes: %v", expectedNodes)
 
 	timeseries, err := getTimeseries(fm, svc)
 	if err != nil {
@@ -467,7 +467,7 @@ func getErrorCauses(err error) string {
 var labelSelectorEverything = labels.Everything()
 
 func getDataFromProxy(fm kubeFramework, svc *kube_v1.Service, url string) ([]byte, error) {
-	glog.V(2).Infof("Querying heapster: %s", url)
+	klog.V(2).Infof("Querying heapster: %s", url)
 	return fm.Client().CoreV1().RESTClient().Get().
 		Namespace(svc.Namespace).
 		Prefix("proxy").
@@ -478,7 +478,7 @@ func getDataFromProxy(fm kubeFramework, svc *kube_v1.Service, url string) ([]byt
 }
 
 func getDataFromProxyWithSelector(fm kubeFramework, svc *kube_v1.Service, url string, labelSelector *labels.Selector) ([]byte, error) {
-	glog.V(2).Infof("Querying heapster: %s", url)
+	klog.V(2).Infof("Querying heapster: %s", url)
 	return fm.Client().CoreV1().RESTClient().Get().
 		Namespace(svc.Namespace).
 		Prefix("proxy").
@@ -495,7 +495,7 @@ func getMetricResultList(fm kubeFramework, svc *kube_v1.Service, url string) (*a
 	}
 	var data api_v1.MetricResultList
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return nil, err
 	}
 	if err := checkMetricResultListSanity(&data); err != nil {
@@ -511,7 +511,7 @@ func getMetricResult(fm kubeFramework, svc *kube_v1.Service, url string) (*api_v
 	}
 	var data api_v1.MetricResult
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return nil, err
 	}
 	if err := checkMetricResultSanity(&data); err != nil {
@@ -527,7 +527,7 @@ func getStringResult(fm kubeFramework, svc *kube_v1.Service, url string) ([]stri
 	}
 	var data []string
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return nil, err
 	}
 	if len(data) == 0 {
@@ -593,13 +593,13 @@ func runModelTest(fm kubeFramework, svc *kube_v1.Service) error {
 		podNamesList = append(podNamesList, fmt.Sprintf("%s/%s", pod.Namespace, pod.Name))
 	}
 
-	glog.V(0).Infof("Expected pods: %v", podNamesList)
-	glog.V(0).Infof("Expected nodes: %v", nodeList)
+	klog.V(0).Infof("Expected pods: %v", podNamesList)
+	klog.V(0).Infof("Expected nodes: %v", nodeList)
 	allkeys, err := getStringResult(fm, svc, "/api/v1/model/debug/allkeys")
 	if err != nil {
 		return fmt.Errorf("Failed to get debug information about keys: %v", err)
 	}
-	glog.V(0).Infof("Available Heapster metric sets: %v", allkeys)
+	klog.V(0).Infof("Available Heapster metric sets: %v", allkeys)
 
 	metricUrlsToCheck := []string{}
 	batchMetricsUrlsToCheck := []string{}
@@ -701,7 +701,7 @@ func getPodMetrics(fm kubeFramework, svc *kube_v1.Service, pod kube_v1.Pod) (*me
 	}
 	var data metrics_api.PodMetrics
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return nil, err
 	}
 	return &data, nil
@@ -730,7 +730,7 @@ func getPodMetricsList(fm kubeFramework, svc *kube_v1.Service, url string, label
 	}
 	var data metrics_api.PodMetricsList
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return metrics_api.PodMetricsList{}, err
 	}
 	return data, nil
@@ -762,7 +762,7 @@ func getSingleNodeMetrics(fm kubeFramework, svc *kube_v1.Service, node string) (
 	}
 	var data metrics_api.NodeMetrics
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return nil, err
 	}
 	return &data, nil
@@ -775,7 +775,7 @@ func getNodeMetricsList(fm kubeFramework, svc *kube_v1.Service, url string, labe
 	}
 	var data metrics_api.NodeMetricsList
 	if err := json.Unmarshal(body, &data); err != nil {
-		glog.V(2).Infof("response body: %v", string(body))
+		klog.V(2).Infof("response body: %v", string(body))
 		return metrics_api.NodeMetricsList{}, err
 	}
 	return data, nil
@@ -1058,98 +1058,98 @@ func apiTest(kubeVersion string, zone string) error {
 	}
 	testFuncs := []func() error{
 		func() error {
-			glog.V(2).Infof("Heapster metric export test...")
+			klog.V(2).Infof("Heapster metric export test...")
 			err := runMetricExportTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Heapster metric export test: OK")
+				klog.V(2).Infof("Heapster metric export test: OK")
 			} else {
-				glog.V(2).Infof("Heapster metric export test: error: %v", err)
+				klog.V(2).Infof("Heapster metric export test: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Model test")
+			klog.V(2).Infof("Model test")
 			err := runModelTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Model test: OK")
+				klog.V(2).Infof("Model test: OK")
 			} else {
-				glog.V(2).Infof("Model test: error: %v", err)
+				klog.V(2).Infof("Model test: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - single pod")
+			klog.V(2).Infof("Metrics API test - single pod")
 			err := runSinglePodMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - single pod: OK")
+				klog.V(2).Infof("Metrics API test - single pod: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - single pod: error: %v", err)
+				klog.V(2).Infof("Metrics API test - single pod: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - All pods in a namespace")
+			klog.V(2).Infof("Metrics API test - All pods in a namespace")
 			err := runAllPodsInNamespaceMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - All pods in a namespace: OK")
+				klog.V(2).Infof("Metrics API test - All pods in a namespace: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - All pods in a namespace: error: %v", err)
+				klog.V(2).Infof("Metrics API test - All pods in a namespace: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - all pods")
+			klog.V(2).Infof("Metrics API test - all pods")
 			err := runAllPodsMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - all pods: OK")
+				klog.V(2).Infof("Metrics API test - all pods: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - all pods: error: %v", err)
+				klog.V(2).Infof("Metrics API test - all pods: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - label selector for pods")
+			klog.V(2).Infof("Metrics API test - label selector for pods")
 			err := runLabelSelectorPodMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - label selector for pods: OK")
+				klog.V(2).Infof("Metrics API test - label selector for pods: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - label selector for pods: error: %v", err)
+				klog.V(2).Infof("Metrics API test - label selector for pods: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - single node")
+			klog.V(2).Infof("Metrics API test - single node")
 			err := runSingleNodeMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - single node: OK")
+				klog.V(2).Infof("Metrics API test - single node: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - single node: error: %v", err)
+				klog.V(2).Infof("Metrics API test - single node: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - label selector for nodes")
+			klog.V(2).Infof("Metrics API test - label selector for nodes")
 			err := runLabelSelectorNodeMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - label selector for nodes: OK")
+				klog.V(2).Infof("Metrics API test - label selector for nodes: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - label selector for nodes: error: %v", err)
+				klog.V(2).Infof("Metrics API test - label selector for nodes: error: %v", err)
 			}
 			return err
 		},
 		func() error {
-			glog.V(2).Infof("Metrics API test - all nodes")
+			klog.V(2).Infof("Metrics API test - all nodes")
 			err := runAllNodesMetricsApiTest(fm, svc)
 			if err == nil {
-				glog.V(2).Infof("Metrics API test - all nodes: OK")
+				klog.V(2).Infof("Metrics API test - all nodes: OK")
 			} else {
-				glog.V(2).Infof("Metrics API test - all nodes: error: %v", err)
+				klog.V(2).Infof("Metrics API test - all nodes: error: %v", err)
 			}
 			return err
 		},
 	}
 	attempts := *maxRetries
-	glog.Infof("Starting tests")
+	klog.Infof("Starting tests")
 	for {
 		var err error
 		for _, testFunc := range testFuncs {
@@ -1161,14 +1161,14 @@ func apiTest(kubeVersion string, zone string) error {
 			continue
 		}
 		if err == nil {
-			glog.V(2).Infof("All tests passed.")
+			klog.V(2).Infof("All tests passed.")
 			break
 		}
 		if attempts == 0 {
-			glog.V(2).Info("Too many attempts.")
+			klog.V(2).Info("Too many attempts.")
 			return err
 		}
-		glog.V(2).Infof("Some tests failed. Retrying.")
+		klog.V(2).Infof("Some tests failed. Retrying.")
 		attempts--
 		time.Sleep(time.Second * 10)
 	}

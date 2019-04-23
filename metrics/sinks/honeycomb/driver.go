@@ -20,7 +20,7 @@ import (
 
 	honeycomb_common "github.com/Stackdriver/heapster/common/honeycomb"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 // These metrics report cumulative values over the lifetime of the process.
@@ -73,7 +73,7 @@ func (sink *honeycombSink) ExportData(dataBatch *core.DataBatch) {
 	}
 	err := sink.client.SendBatch(batch)
 	if err != nil {
-		glog.Warningf("Failed to send metrics batch: %v", err)
+		klog.Warningf("Failed to send metrics batch: %v", err)
 	}
 }
 

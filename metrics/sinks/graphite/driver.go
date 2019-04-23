@@ -24,8 +24,8 @@ import (
 
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
 	"github.com/marpaia/graphite-golang"
+	"k8s.io/klog"
 )
 
 const (
@@ -99,7 +99,7 @@ func (m *graphiteMetric) Path() string {
 		case core.MetricSetTypeCluster:
 			return fmt.Sprintf("cluster.%s", metricPath)
 		default:
-			glog.V(6).Infof("Unknown metric type %s", t)
+			klog.V(6).Infof("Unknown metric type %s", t)
 		}
 	}
 	return metricPath
@@ -189,10 +189,10 @@ func (s *Sink) ExportData(dataBatch *core.DataBatch) {
 			}
 		}
 	}
-	glog.V(8).Infof("Sending %d events to graphite", len(metrics))
+	klog.V(8).Infof("Sending %d events to graphite", len(metrics))
 	if err := s.client.SendMetrics(metrics); err != nil {
-		glog.V(4).Info("Graphite connection error:", err)
-		glog.V(2).Info("There were errors sending events to Graphite, reconecting")
+		klog.V(4).Info("Graphite connection error:", err)
+		klog.V(2).Info("There were errors sending events to Graphite, reconecting")
 		s.client.Disconnect()
 		s.client.Connect()
 	}

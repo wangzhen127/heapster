@@ -17,7 +17,7 @@ package processors
 import (
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type RateCalculator struct {
@@ -31,13 +31,13 @@ func (this *RateCalculator) Name() string {
 
 func (this *RateCalculator) Process(batch *core.DataBatch) (*core.DataBatch, error) {
 	if this.previousBatch == nil {
-		glog.V(4).Infof("Skipping rate calculation entirely - no previous batch found")
+		klog.V(4).Infof("Skipping rate calculation entirely - no previous batch found")
 		this.previousBatch = batch
 		return batch, nil
 	}
 	if !batch.Timestamp.After(this.previousBatch.Timestamp) {
 		// something got out of sync, do nothing.
-		glog.Errorf("New data batch has timestamp before the previous one: new:%v old:%v", batch.Timestamp, this.previousBatch.Timestamp)
+		klog.Errorf("New data batch has timestamp before the previous one: new:%v old:%v", batch.Timestamp, this.previousBatch.Timestamp)
 		return batch, nil
 	}
 
@@ -48,11 +48,11 @@ func (this *RateCalculator) Process(batch *core.DataBatch) (*core.DataBatch, err
 		}
 		if !newMs.ScrapeTime.After(oldMs.ScrapeTime) {
 			// New must be strictly after old.
-			glog.V(4).Infof("Skipping rate calculations for %s - new batch (%s) was not scraped strictly after old batch (%s)", key, newMs.ScrapeTime, oldMs.ScrapeTime)
+			klog.V(4).Infof("Skipping rate calculations for %s - new batch (%s) was not scraped strictly after old batch (%s)", key, newMs.ScrapeTime, oldMs.ScrapeTime)
 			continue
 		}
 		if !newMs.CollectionStartTime.Equal(oldMs.CollectionStartTime) {
-			glog.V(4).Infof("Skipping rates for %s - different collection start time new:%v  old:%v", key, newMs.CollectionStartTime, oldMs.CollectionStartTime)
+			klog.V(4).Infof("Skipping rates for %s - different collection start time new:%v  old:%v", key, newMs.CollectionStartTime, oldMs.CollectionStartTime)
 			// Create time for container must be the same.
 			continue
 		}
@@ -91,7 +91,7 @@ func (this *RateCalculator) Process(batch *core.DataBatch) (*core.DataBatch, err
 							})
 						}
 					} else if foundNew && !foundOld || !foundNew && foundOld {
-						glog.V(4).Infof("Skipping rates for %s in %s: metric not found in one of old (%v) or new (%v)", metricName, key, foundOld, foundNew)
+						klog.V(4).Infof("Skipping rates for %s in %s: metric not found in one of old (%v) or new (%v)", metricName, key, foundOld, foundNew)
 					}
 				}
 			} else {
@@ -119,7 +119,7 @@ func (this *RateCalculator) Process(batch *core.DataBatch) (*core.DataBatch, err
 						FloatValue: newVal,
 					}
 				} else if foundNew && !foundOld || !foundNew && foundOld {
-					glog.V(4).Infof("Skipping rates for %s in %s: metric not found in one of old (%v) or new (%v)", metricName, key, foundOld, foundNew)
+					klog.V(4).Infof("Skipping rates for %s in %s: metric not found in one of old (%v) or new (%v)", metricName, key, foundOld, foundNew)
 				}
 			}
 		}

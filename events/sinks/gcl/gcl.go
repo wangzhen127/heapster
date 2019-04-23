@@ -23,10 +23,10 @@ import (
 	gce_util "github.com/Stackdriver/heapster/common/gce"
 	"github.com/Stackdriver/heapster/events/core"
 
-	"github.com/golang/glog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	gcl "google.golang.org/api/logging/v2"
+	"k8s.io/klog"
 )
 
 const (
@@ -42,15 +42,15 @@ type gclSink struct {
 
 func (sink *gclSink) ExportEvents(eventBatch *core.EventBatch) {
 	if len(eventBatch.Events) == 0 {
-		glog.V(4).Info("Not events to export")
+		klog.V(4).Info("Not events to export")
 		return
 	}
-	glog.V(4).Info("Exporting events")
+	klog.V(4).Info("Exporting events")
 	entries := make([]*gcl.LogEntry, len(eventBatch.Events))
 	for i, event := range eventBatch.Events {
 		evtJson, err := json.Marshal(event)
 		if err != nil {
-			glog.Errorf("Skipping exporting event due to error while marshaling event %v as JSON: %v", event, err)
+			klog.Errorf("Skipping exporting event due to error while marshaling event %v as JSON: %v", event, err)
 			continue
 		}
 		entries[i] = &gcl.LogEntry{
@@ -64,9 +64,9 @@ func (sink *gclSink) ExportEvents(eventBatch *core.EventBatch) {
 	}
 	req := &gcl.WriteLogEntriesRequest{Entries: entries}
 	if _, err := sink.gclService.Entries.Write(req).Do(); err != nil {
-		glog.Errorf("Error while exporting events to GCL: %v", err)
+		klog.Errorf("Error while exporting events to GCL: %v", err)
 	} else {
-		glog.V(4).Infof("Successfully exported %d events", len(entries))
+		klog.V(4).Infof("Successfully exported %d events", len(entries))
 	}
 }
 
@@ -97,6 +97,6 @@ func CreateGCLSink(uri *url.URL) (core.EventSink, error) {
 	}
 
 	sink := &gclSink{project: projectId, gclService: gclService}
-	glog.Info("created GCL sink")
+	klog.Info("created GCL sink")
 	return sink, nil
 }

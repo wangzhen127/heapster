@@ -19,8 +19,8 @@ import (
 	"time"
 
 	"github.com/Stackdriver/heapster/events/core"
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"k8s.io/klog"
 )
 
 const (
@@ -76,7 +76,7 @@ func NewEventSinkManager(sinks []core.EventSink, exportEventsTimeout, stopTimeou
 				case data := <-sh.eventBatchChannel:
 					export(sh.sink, data)
 				case isStop := <-sh.stopChannel:
-					glog.V(2).Infof("Stop received: %s", sh.sink.Name())
+					klog.V(2).Infof("Stop received: %s", sh.sink.Name())
 					if isStop {
 						sh.sink.Stop()
 						return
@@ -99,13 +99,13 @@ func (this *sinkManager) ExportEvents(data *core.EventBatch) {
 		wg.Add(1)
 		go func(sh sinkHolder, wg *sync.WaitGroup) {
 			defer wg.Done()
-			glog.V(2).Infof("Pushing events to: %s", sh.sink.Name())
+			klog.V(2).Infof("Pushing events to: %s", sh.sink.Name())
 			select {
 			case sh.eventBatchChannel <- data:
-				glog.V(2).Infof("Data events completed: %s", sh.sink.Name())
+				klog.V(2).Infof("Data events completed: %s", sh.sink.Name())
 				// everything ok
 			case <-time.After(this.exportEventsTimeout):
-				glog.Warningf("Failed to events data to sink: %s", sh.sink.Name())
+				klog.Warningf("Failed to events data to sink: %s", sh.sink.Name())
 			}
 		}(sh, &wg)
 	}
@@ -119,16 +119,16 @@ func (this *sinkManager) Name() string {
 
 func (this *sinkManager) Stop() {
 	for _, sh := range this.sinkHolders {
-		glog.V(2).Infof("Running stop for: %s", sh.sink.Name())
+		klog.V(2).Infof("Running stop for: %s", sh.sink.Name())
 
 		go func(sh sinkHolder) {
 			select {
 			case sh.stopChannel <- true:
 				// everything ok
-				glog.V(2).Infof("Stop sent to sink: %s", sh.sink.Name())
+				klog.V(2).Infof("Stop sent to sink: %s", sh.sink.Name())
 
 			case <-time.After(this.stopTimeout):
-				glog.Warningf("Failed to stop sink: %s", sh.sink.Name())
+				klog.Warningf("Failed to stop sink: %s", sh.sink.Name())
 			}
 			return
 		}(sh)

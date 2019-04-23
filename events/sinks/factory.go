@@ -19,14 +19,13 @@ import (
 
 	"github.com/Stackdriver/heapster/common/flags"
 	"github.com/Stackdriver/heapster/events/core"
-	"github.com/Stackdriver/heapster/events/sinks/elasticsearch"
 	"github.com/Stackdriver/heapster/events/sinks/gcl"
 	"github.com/Stackdriver/heapster/events/sinks/honeycomb"
 	"github.com/Stackdriver/heapster/events/sinks/influxdb"
 	"github.com/Stackdriver/heapster/events/sinks/kafka"
 	"github.com/Stackdriver/heapster/events/sinks/log"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type SinkFactory struct {
@@ -40,8 +39,6 @@ func (this *SinkFactory) Build(uri flags.Uri) (core.EventSink, error) {
 		return logsink.CreateLogSink()
 	case "influxdb":
 		return influxdb.CreateInfluxdbSink(&uri.Val)
-	case "elasticsearch":
-		return elasticsearch.NewElasticSearchSink(&uri.Val)
 	case "kafka":
 		return kafka.NewKafkaSink(&uri.Val)
 	case "honeycomb":
@@ -56,7 +53,7 @@ func (this *SinkFactory) BuildAll(uris flags.Uris) []core.EventSink {
 	for _, uri := range uris {
 		sink, err := this.Build(uri)
 		if err != nil {
-			glog.Errorf("Failed to create %v sink: %v", uri, err)
+			klog.Errorf("Failed to create %v sink: %v", uri, err)
 			continue
 		}
 		result = append(result, sink)

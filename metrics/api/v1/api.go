@@ -18,7 +18,7 @@ import (
 	"time"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/api/v1/types"
 	"github.com/Stackdriver/heapster/metrics/core"
@@ -193,7 +193,7 @@ func (a *Api) exportMetrics(_ *restful.Request, response *restful.Response) {
 	response.PrettyPrint(false)
 	err := response.WriteEntity(a.getMetricsResponse())
 	if err != nil {
-		glog.V(4).Infof("Error writing response: %v", err)
+		klog.V(4).Infof("Error writing response: %v", err)
 	}
 }
 

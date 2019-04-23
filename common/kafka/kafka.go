@@ -25,7 +25,7 @@ import (
 	"time"
 
 	kafka "github.com/Shopify/sarama"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 const (
@@ -71,7 +71,7 @@ func (sink *kafkaSink) ProduceKafkaMessage(msgData interface{}) error {
 		return fmt.Errorf("failed to produce message to %s: %s", sink.dataTopic, err)
 	}
 	end := time.Now()
-	glog.V(4).Infof("Exported %d data to kafka in %s", len(msgJson), end.Sub(start))
+	klog.V(4).Infof("Exported %d data to kafka in %s", len(msgJson), end.Sub(start))
 	return nil
 }
 
@@ -186,7 +186,7 @@ func NewKafkaClient(uri *url.URL, topicType string) (KafkaClient, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse url's query string: %s", err)
 	}
-	glog.V(3).Info(getOptionsWithoutSecrets(opts))
+	klog.V(3).Info(getOptionsWithoutSecrets(opts))
 
 	topic, err := getTopic(opts, topicType)
 	if err != nil {
@@ -203,7 +203,7 @@ func NewKafkaClient(uri *url.URL, topicType string) (KafkaClient, error) {
 		return nil, fmt.Errorf("There is no broker assigned for connecting kafka")
 	}
 	kafkaBrokers = append(kafkaBrokers, opts["brokers"]...)
-	glog.V(2).Infof("initializing kafka sink with brokers - %v", kafkaBrokers)
+	klog.V(2).Infof("initializing kafka sink with brokers - %v", kafkaBrokers)
 
 	kafka.Logger = GologAdapterLogger{}
 
@@ -232,13 +232,13 @@ func NewKafkaClient(uri *url.URL, topicType string) (KafkaClient, error) {
 	}
 
 	// set up producer of kafka server.
-	glog.V(3).Infof("attempting to setup kafka sink")
+	klog.V(3).Infof("attempting to setup kafka sink")
 	sinkProducer, err := kafka.NewSyncProducer(kafkaBrokers, config)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to setup Producer: - %v", err)
 	}
 
-	glog.V(3).Infof("kafka sink setup successfully")
+	klog.V(3).Infof("kafka sink setup successfully")
 	return &kafkaSink{
 		producer:  sinkProducer,
 		dataTopic: topic,

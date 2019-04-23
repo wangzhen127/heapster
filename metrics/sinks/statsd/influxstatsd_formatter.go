@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"sort"
 	"strings"
 )
@@ -68,7 +68,7 @@ func (formatter *InfluxstatsdFormatter) expandUserLabels(labels map[string]strin
 }
 
 func NewInfluxstatsdFormatter() Formatter {
-	glog.V(2).Info("influxstatsd formatter is created")
+	klog.V(2).Info("influxstatsd formatter is created")
 	return &InfluxstatsdFormatter{
 		delimReplacer: strings.NewReplacer(",", "_", ":", "_", "=", "_", "|", "_"),
 	}

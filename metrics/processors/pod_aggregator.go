@@ -17,7 +17,7 @@ package processors
 import (
 	"fmt"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 )
@@ -53,7 +53,7 @@ func (this *PodAggregator) Process(batch *core.DataBatch) (*core.DataBatch, erro
 		podName, found := metricSet.Labels[core.LabelPodName.Key]
 		ns, found2 := metricSet.Labels[core.LabelNamespaceName.Key]
 		if !found || !found2 {
-			glog.Errorf("No namespace and/or pod info in container %s: %v", key, metricSet.Labels)
+			klog.Errorf("No namespace and/or pod info in container %s: %v", key, metricSet.Labels)
 			continue
 		}
 
@@ -62,7 +62,7 @@ func (this *PodAggregator) Process(batch *core.DataBatch) (*core.DataBatch, erro
 		if !found {
 			pod, found = newPods[podKey]
 			if !found {
-				glog.V(2).Infof("Pod not found adding %s", podKey)
+				klog.V(2).Infof("Pod not found adding %s", podKey)
 				pod = this.podMetricSet(metricSet.Labels)
 				newPods[podKey] = pod
 			}
@@ -80,7 +80,7 @@ func (this *PodAggregator) Process(batch *core.DataBatch) (*core.DataBatch, erro
 			} else {
 				if requireAggregate[podKey+metricName] {
 					if aggregatedValue.ValueType != metricValue.ValueType {
-						glog.Errorf("PodAggregator: inconsistent type in %s", metricName)
+						klog.Errorf("PodAggregator: inconsistent type in %s", metricName)
 						continue
 					}
 

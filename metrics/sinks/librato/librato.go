@@ -24,7 +24,7 @@ import (
 	librato_common "github.com/Stackdriver/heapster/common/librato"
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type libratoSink struct {
@@ -155,10 +155,10 @@ func (sink *libratoSink) ExportData(dataBatch *core.DataBatch) {
 func (sink *libratoSink) sendData(measurements []librato_common.Measurement) {
 	start := time.Now()
 	if err := sink.client.Write(measurements); err != nil {
-		glog.Errorf("Librato write failed: %v", err)
+		klog.Errorf("Librato write failed: %v", err)
 	}
 	end := time.Now()
-	glog.V(4).Infof("Exported %d data to librato in %s", len(measurements), end.Sub(start))
+	klog.V(4).Infof("Exported %d data to librato in %s", len(measurements), end.Sub(start))
 }
 
 func (sink *libratoSink) Name() string {
@@ -179,6 +179,6 @@ func CreateLibratoSink(uri *url.URL) (core.DataSink, error) {
 		client: client,
 		c:      *config,
 	}
-	glog.Infof("created librato sink with options: user:%s", config.Username)
+	klog.Infof("created librato sink with options: user:%s", config.Username)
 	return sink, nil
 }

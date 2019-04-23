@@ -20,8 +20,8 @@ import (
 
 	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
 	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
-	"github.com/golang/glog"
 	kube_client "k8s.io/client-go/rest"
+	"k8s.io/klog"
 )
 
 const (
@@ -58,8 +58,8 @@ func GetKubeConfigs(uri *url.URL) (*kube_client.Config, *kubelet_client.KubeletC
 		}
 	}
 
-	glog.Infof("Using Kubernetes client with master %q and version %+v\n", kubeConfig.Host, kubeConfig.GroupVersion)
-	glog.Infof("Using kubelet port %d", kubeletPort)
+	klog.Infof("Using Kubernetes client with master %q and version %+v\n", kubeConfig.Host, kubeConfig.GroupVersion)
+	klog.Infof("Using kubelet port %d", kubeletPort)
 
 	kubeletConfig := &kubelet_client.KubeletClientConfig{
 		Port:            uint(kubeletPort),

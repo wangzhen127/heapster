@@ -24,7 +24,7 @@ import (
 	"time"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
@@ -96,7 +96,7 @@ func (a *Api) nodeMetricsList(request *restful.Request, response *restful.Respon
 	labelSelector, err := labels.Parse(selector)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while parsing selector %v: %v", selector, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		response.WriteError(http.StatusBadRequest, errMsg)
 		return
 	}
@@ -109,7 +109,7 @@ func (a *Api) nodeMetricsList(request *restful.Request, response *restful.Respon
 	})
 	if err != nil {
 		errMsg := fmt.Errorf("Error while listing nodes: %v", err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		response.WriteError(http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -194,7 +194,7 @@ func podMetricsInNamespaceList(a *Api, request *restful.Request, response *restf
 	labelSelector, err := labels.Parse(selector)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while parsing selector %v: %v", selector, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		response.WriteError(http.StatusBadRequest, errMsg)
 		return
 	}
@@ -202,7 +202,7 @@ func podMetricsInNamespaceList(a *Api, request *restful.Request, response *restf
 	pods, err := a.podLister.Pods(namespace).List(labelSelector)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while listing pods for selector %v: %v", selector, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		response.WriteError(http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -212,7 +212,7 @@ func podMetricsInNamespaceList(a *Api, request *restful.Request, response *restf
 		if m := a.getPodMetrics(pod); m != nil {
 			res.Items = append(res.Items, *m)
 		} else {
-			glog.V(2).Infof("No metrics for pod %s/%s", pod.Namespace, pod.Name)
+			klog.V(2).Infof("No metrics for pod %s/%s", pod.Namespace, pod.Name)
 		}
 	}
 	response.WriteEntity(&res)
@@ -225,7 +225,7 @@ func (a *Api) podMetrics(request *restful.Request, response *restful.Response) {
 	pod, err := a.podLister.Pods(ns).Get(name)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while getting pod %v: %v", name, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		response.WriteError(http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -261,7 +261,7 @@ func (a *Api) getPodMetrics(pod *kube_v1.Pod) *metrics.PodMetrics {
 	for _, c := range pod.Spec.Containers {
 		ms, found := batch.MetricSets[core.PodContainerKey(pod.Namespace, pod.Name, c.Name)]
 		if !found {
-			glog.V(2).Infof("No metrics for container %s in pod %s/%s", c.Name, pod.Namespace, pod.Name)
+			klog.V(2).Infof("No metrics for container %s in pod %s/%s", c.Name, pod.Namespace, pod.Name)
 			return nil
 		}
 

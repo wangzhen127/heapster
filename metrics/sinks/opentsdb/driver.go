@@ -25,7 +25,7 @@ import (
 	"github.com/Stackdriver/heapster/metrics/core"
 	opentsdbclient "github.com/bluebreezecf/opentsdb-goclient/client"
 	opentsdbcfg "github.com/bluebreezecf/opentsdb-goclient/config"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 const (
@@ -63,7 +63,7 @@ type openTSDBSink struct {
 
 func (tsdbSink *openTSDBSink) ExportData(data *core.DataBatch) {
 	if err := tsdbSink.client.Ping(); err != nil {
-		glog.Warningf("Failed to ping opentsdb: %v", err)
+		klog.Warningf("Failed to ping opentsdb: %v", err)
 		return
 	}
 	dataPoints := make([]opentsdbclient.DataPoint, 0, batchSize)
@@ -73,7 +73,7 @@ func (tsdbSink *openTSDBSink) ExportData(data *core.DataBatch) {
 			if len(dataPoints) >= batchSize {
 				_, err := tsdbSink.client.Put(dataPoints, opentsdbclient.PutRespWithSummary)
 				if err != nil {
-					glog.Errorf("failed to write metrics to opentsdb - %v", err)
+					klog.Errorf("failed to write metrics to opentsdb - %v", err)
 					tsdbSink.recordWriteFailure()
 					return
 				}
@@ -84,7 +84,7 @@ func (tsdbSink *openTSDBSink) ExportData(data *core.DataBatch) {
 	if len(dataPoints) >= 0 {
 		_, err := tsdbSink.client.Put(dataPoints, opentsdbclient.PutRespWithSummary)
 		if err != nil {
-			glog.Errorf("failed to write metrics to opentsdb - %v", err)
+			klog.Errorf("failed to write metrics to opentsdb - %v", err)
 			tsdbSink.recordWriteFailure()
 			return
 		}
@@ -195,6 +195,6 @@ func CreateOpenTSDBSink(uri *url.URL) (core.DataSink, error) {
 		host:        host,
 	}
 
-	glog.Infof("created opentsdb sink with host: %v, clusterName: %v", host, clusterName)
+	klog.Infof("created opentsdb sink with host: %v, clusterName: %v", host, clusterName)
 	return sink, nil
 }

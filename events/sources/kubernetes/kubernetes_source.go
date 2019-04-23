@@ -18,8 +18,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"k8s.io/klog"
 
 	kubeconfig "github.com/Stackdriver/heapster/common/kubernetes"
 	"github.com/Stackdriver/heapster/events/core"
@@ -107,7 +107,7 @@ func (this *KubernetesEventSource) watch() {
 	for {
 		events, err := this.eventClient.List(metav1.ListOptions{})
 		if err != nil {
-			glog.Errorf("Failed to load events: %v", err)
+			klog.Errorf("Failed to load events: %v", err)
 			time.Sleep(time.Second)
 			continue
 		}
@@ -120,7 +120,7 @@ func (this *KubernetesEventSource) watch() {
 				Watch:           true,
 				ResourceVersion: resourceVersion})
 		if err != nil {
-			glog.Errorf("Failed to start watch for new events: %v", err)
+			klog.Errorf("Failed to start watch for new events: %v", err)
 			time.Sleep(time.Second)
 			continue
 		}
@@ -132,16 +132,16 @@ func (this *KubernetesEventSource) watch() {
 			select {
 			case watchUpdate, ok := <-watchChannel:
 				if !ok {
-					glog.Errorf("Event watch channel closed")
+					klog.Errorf("Event watch channel closed")
 					break inner_loop
 				}
 
 				if watchUpdate.Type == kubewatch.Error {
 					if status, ok := watchUpdate.Object.(*metav1.Status); ok {
-						glog.Errorf("Error during watch: %#v", status)
+						klog.Errorf("Error during watch: %#v", status)
 						break inner_loop
 					}
-					glog.Errorf("Received unexpected error: %#v", watchUpdate.Object)
+					klog.Errorf("Received unexpected error: %#v", watchUpdate.Object)
 					break inner_loop
 				}
 
@@ -153,19 +153,19 @@ func (this *KubernetesEventSource) watch() {
 							// Ok, buffer not full.
 						default:
 							// Buffer full, need to drop the event.
-							glog.Errorf("Event buffer full, dropping event")
+							klog.Errorf("Event buffer full, dropping event")
 						}
 					case kubewatch.Deleted:
 						// Deleted events are silently ignored.
 					default:
-						glog.Warningf("Unknown watchUpdate.Type: %#v", watchUpdate.Type)
+						klog.Warningf("Unknown watchUpdate.Type: %#v", watchUpdate.Type)
 					}
 				} else {
-					glog.Errorf("Wrong object received: %v", watchUpdate)
+					klog.Errorf("Wrong object received: %v", watchUpdate)
 				}
 
 			case <-this.stopChannel:
-				glog.Infof("Event watching stopped")
+				klog.Infof("Event watching stopped")
 				return
 			}
 		}
