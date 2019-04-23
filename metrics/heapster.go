@@ -56,6 +56,7 @@ import (
 )
 
 func main() {
+	klog.InitFlags(nil)
 	defer logs.FlushLogs()
 
 	opt := options.NewHeapsterRunOptions()

@@ -5,13 +5,13 @@ FLAGS=
 ARCH?=amd64
 ALL_ARCHITECTURES=amd64 arm arm64 ppc64le s390x
 ML_PLATFORMS=linux/amd64,linux/arm,linux/arm64,linux/ppc64le,linux/s390x
-GOLANG_VERSION?=1.8
+GOLANG_VERSION?=1.11
 
 ifndef TEMP_DIR
 TEMP_DIR:=$(shell mktemp -d /tmp/heapster.XXXXXX)
 endif
 
-VERSION?=v1.6.1
+VERSION?=v2.0.0
 GIT_COMMIT:=$(shell git rev-parse --short HEAD)
 
 TESTUSER=
@@ -34,7 +34,7 @@ ifeq ($(INTERACTIVE), 1)
 	TTY=-t
 endif
 
-SUPPORTED_KUBE_VERSIONS=1.9.3
+SUPPORTED_KUBE_VERSIONS=1.14
 TEST_NAMESPACE=heapster-e2e-tests
 
 HEAPSTER_LDFLAGS=-w -X github.com/Stackdriver/heapster/version.HeapsterVersion=$(VERSION) -X github.com/Stackdriver/heapster/version.GitCommit=$(GIT_COMMIT)
