@@ -14,10 +14,8 @@ endif
 VERSION?=v2.0.0
 GIT_COMMIT:=$(shell git rev-parse --short HEAD)
 
-TESTUSER=
 ifdef REPO_DIR
 DOCKER_IN_DOCKER=1
-TESTUSER=jenkins
 else
 REPO_DIR:=$(shell pwd)
 endif
@@ -33,9 +31,6 @@ TTY=
 ifeq ($(INTERACTIVE), 1)
 	TTY=-t
 endif
-
-SUPPORTED_KUBE_VERSIONS=1.14
-TEST_NAMESPACE=heapster-e2e-tests
 
 HEAPSTER_LDFLAGS=-w -X github.com/Stackdriver/heapster/version.HeapsterVersion=$(VERSION) -X github.com/Stackdriver/heapster/version.GitCommit=$(GIT_COMMIT)
 
@@ -61,9 +56,6 @@ endif
 test-unit-cov: clean sanitize build
 	hooks/coverage.sh
 
-test-integration: clean build
-	go test -v --timeout=60m ./integration/... --vmodule=*=2 $(FLAGS) --namespace=$(TEST_NAMESPACE) --kube_versions=$(SUPPORTED_KUBE_VERSIONS) --test_user=$(TESTUSER) --logtostderr
-
 container:
 	# Run the build in a container in order to have reproducible builds
 	# Also, fetch the latest ca certificates
@@ -75,6 +67,7 @@ container:
 	cp deploy/docker/Dockerfile $(TEMP_DIR)
 	# The next command runs 'docker build' in Cloud Builder.
 	gcloud builds submit -t $(PREFIX)/heapster-$(ARCH):$(VERSION) $(TEMP_DIR)
+	docker pull $(PREFIX)/heapster-$(ARCH):$(VERSION)
 ifneq ($(OVERRIDE_IMAGE_NAME),)
 	docker tag $(PREFIX)/heapster-$(ARCH):$(VERSION) $(OVERRIDE_IMAGE_NAME)
 endif
@@ -127,4 +120,4 @@ clean:
 	rm -f heapster
 	rm -f eventer
 
-.PHONY: all build sanitize test-unit test-unit-cov test-integration container grafana influxdb clean
+.PHONY: all build sanitize test-unit test-unit-cov container grafana influxdb clean
