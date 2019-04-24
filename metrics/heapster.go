@@ -19,6 +19,7 @@ package main
 import (
 	"crypto/tls"
 	"errors"
+	"flag"
 	"fmt"
 	"net"
 	"net/http"
@@ -56,11 +57,12 @@ import (
 )
 
 func main() {
-	klog.InitFlags(nil)
 	defer logs.FlushLogs()
 
 	opt := options.NewHeapsterRunOptions()
 	opt.AddFlags(pflag.CommandLine)
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
 
 	if opt.Version {
 		fmt.Println(version.VersionInfo())
