@@ -193,6 +193,18 @@ var (
 		Name:       "kubernetes.io/node/ephemeral_storage/allocatable_bytes",
 	}
 
+	ephemeralstorageInodesTotalMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/ephemeral_storage/inodes_total",
+	}
+
+	ephemeralstorageInodesFreeMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/ephemeral_storage/inodes_free",
+	}
+
 	networkNodeReceivedBytesMD = &metricMetadata{
 		MetricKind: google_api5.MetricDescriptor_CUMULATIVE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
@@ -279,16 +291,16 @@ var (
 		Name:       "container.googleapis.com/container/disk/bytes_total",
 	}
 
-	legacyNodeInodesMD = &metricMetadata{
+	legacyDiskInodesTotalMD = &metricMetadata{
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
-		Name:       "container.googleapis.com/internal/node/inodes",
+		Name:       "container.googleapis.com/container/disk/inodes_total",
 	}
 
-	legacyNodeInodesFreeMD = &metricMetadata{
+	legacyDiskInodesFreeMD = &metricMetadata{
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
-		Name:       "container.googleapis.com/internal/node/inodes_free",
+		Name:       "container.googleapis.com/container/disk/inodes_free",
 	}
 
 	legacyAcceleratorMemoryTotalMD = &metricMetadata{
