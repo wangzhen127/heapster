@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/riemann/riemann-go-client"
+	"k8s.io/klog"
 )
 
 // Used to store the Riemann configuration specified in the Heapster cli
@@ -83,14 +83,14 @@ func CreateRiemannSink(uri *url.URL) (*RiemannSink, error) {
 		c.Tags = []string{"heapster"}
 	}
 
-	glog.Infof("Riemann sink URI: '%+v', host: '%+v', options: '%+v', ", uri, c.Host, options)
+	klog.Infof("Riemann sink URI: '%+v', host: '%+v', options: '%+v', ", uri, c.Host, options)
 	rs := &RiemannSink{
 		Client: nil,
 		Config: c,
 	}
 	client, err := GetRiemannClient(rs.Config)
 	if err != nil {
-		glog.Warningf("Riemann sink not connected: %v", err)
+		klog.Warningf("Riemann sink not connected: %v", err)
 		// Warn but return the sink => the client in the sink can be nil
 	}
 	rs.Client = client
@@ -100,7 +100,7 @@ func CreateRiemannSink(uri *url.URL) (*RiemannSink, error) {
 
 // Receives a sink, connect the riemann client.
 func GetRiemannClient(config RiemannConfig) (riemanngo.Client, error) {
-	glog.Infof("Connect Riemann client...")
+	klog.Infof("Connect Riemann client...")
 	client := riemanngo.NewTcpClient(config.Host)
 	runtime.SetFinalizer(client, func(c riemanngo.Client) { c.Close() })
 	// 5 seconds timeout
@@ -115,17 +115,17 @@ func GetRiemannClient(config RiemannConfig) (riemanngo.Client, error) {
 func SendData(client riemanngo.Client, events []riemanngo.Event) error {
 	// do nothing if we are not connected
 	if client == nil {
-		glog.Warningf("Riemann sink not connected")
+		klog.Warningf("Riemann sink not connected")
 		return nil
 	}
 	start := time.Now()
 	_, err := riemanngo.SendEvents(client, &events)
 	end := time.Now()
 	if err == nil {
-		glog.V(4).Infof("Exported %d events to riemann in %s", len(events), end.Sub(start))
+		klog.V(4).Infof("Exported %d events to riemann in %s", len(events), end.Sub(start))
 		return nil
 	} else {
-		glog.Warningf("There were errors sending events to Riemman, forcing reconnection. Error : %+v", err)
+		klog.Warningf("There were errors sending events to Riemman, forcing reconnection. Error : %+v", err)
 		return err
 	}
 }

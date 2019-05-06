@@ -24,7 +24,6 @@ import (
 	. "github.com/Stackdriver/heapster/metrics/core"
 
 	"github.com/Stackdriver/heapster/metrics/util"
-	"github.com/golang/glog"
 	cadvisor "github.com/google/cadvisor/info/v1"
 	"github.com/prometheus/client_golang/prometheus"
 	kube_api "k8s.io/api/core/v1"
@@ -33,6 +32,7 @@ import (
 	kube_client "k8s.io/client-go/kubernetes"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog"
 )
 
 const (
@@ -91,7 +91,7 @@ func (this *kubeletMetricsSource) String() string {
 }
 
 func (this *kubeletMetricsSource) handleSystemContainer(c *cadvisor.ContainerInfo, cMetrics *MetricSet) string {
-	glog.V(8).Infof("Found system container %v with labels: %+v", c.Name, c.Spec.Labels)
+	klog.V(8).Infof("Found system container %v with labels: %+v", c.Name, c.Spec.Labels)
 	cName := c.Name
 	if strings.HasPrefix(cName, "/") {
 		cName = cName[1:]
@@ -211,7 +211,7 @@ metricloop:
 		case cadvisor.MetricCumulative:
 			mv.MetricType = MetricCumulative
 		default:
-			glog.V(4).Infof("Skipping %s: unknown custom metric type: %v", spec.Name, spec.Type)
+			klog.V(4).Infof("Skipping %s: unknown custom metric type: %v", spec.Name, spec.Type)
 			continue metricloop
 		}
 
@@ -223,7 +223,7 @@ metricloop:
 			mv.ValueType = ValueFloat
 			mv.FloatValue = newest.FloatValue
 		default:
-			glog.V(4).Infof("Skipping %s: unknown custom metric format: %v", spec.Name, spec.Format)
+			klog.V(4).Infof("Skipping %s: unknown custom metric format: %v", spec.Name, spec.Format)
 			continue metricloop
 		}
 
@@ -240,7 +240,7 @@ func (this *kubeletMetricsSource) ScrapeMetrics(start, end time.Time) (*DataBatc
 		return nil, err
 	}
 
-	glog.V(2).Infof("successfully obtained stats from %s for %v containers", this.host, len(containers))
+	klog.V(2).Infof("successfully obtained stats from %s for %v containers", this.host, len(containers))
 
 	result := &DataBatch{
 		Timestamp:  end,
@@ -276,18 +276,18 @@ func (this *kubeletProvider) GetMetricsSources() []MetricsSource {
 	sources := []MetricsSource{}
 	nodes, err := this.nodeLister.List(labels.Everything())
 	if err != nil {
-		glog.Errorf("error while listing nodes: %v", err)
+		klog.Errorf("error while listing nodes: %v", err)
 		return sources
 	}
 	if len(nodes) == 0 {
-		glog.Error("No nodes received from APIserver.")
+		klog.Error("No nodes received from APIserver.")
 		return sources
 	}
 
 	for _, node := range nodes {
 		hostname, ip, err := GetNodeHostnameAndIP(node)
 		if err != nil {
-			glog.Errorf("%v", err)
+			klog.Errorf("%v", err)
 			continue
 		}
 		sources = append(sources, NewKubeletMetricsSource(
@@ -295,7 +295,7 @@ func (this *kubeletProvider) GetMetricsSources() []MetricsSource {
 			this.kubeletClient,
 			node.Name,
 			hostname,
-			node.Spec.ExternalID,
+			"",
 			getNodeSchedulableStatus(node),
 		))
 	}
@@ -350,7 +350,7 @@ func NewKubeletProvider(uri *url.URL) (MetricsSourceProvider, error) {
 
 	// Get nodes to test if the client is configured well. Watch gives less error information.
 	if _, err := kubeClient.CoreV1().Nodes().List(metav1.ListOptions{}); err != nil {
-		glog.Errorf("Failed to load nodes: %v", err)
+		klog.Errorf("Failed to load nodes: %v", err)
 	}
 
 	// watch nodes

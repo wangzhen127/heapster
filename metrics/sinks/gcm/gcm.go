@@ -23,10 +23,10 @@ import (
 	gce_util "github.com/Stackdriver/heapster/common/gce"
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	gcm "google.golang.org/api/monitoring/v3"
+	"k8s.io/klog"
 )
 
 const (
@@ -90,7 +90,7 @@ func createTimeSeries(timestamp time.Time, labels map[string]string, metric stri
 		point.Value.ForceSendFields = []string{"DoubleValue"}
 		valueType = "DOUBLE"
 	default:
-		glog.Errorf("Type not supported %v in %v", val.ValueType, metric)
+		klog.Errorf("Type not supported %v in %v", val.ValueType, metric)
 		return nil
 	}
 	// For cumulative metric use the provided start time.
@@ -165,15 +165,15 @@ func fullProjectName(name string) string {
 func (sink *gcmSink) sendRequest(req *gcm.CreateTimeSeriesRequest) {
 	_, err := sink.gcmService.Projects.TimeSeries.Create(fullProjectName(sink.project), req).Do()
 	if err != nil {
-		glog.Errorf("Error while sending request to GCM %v", err)
+		klog.Errorf("Error while sending request to GCM %v", err)
 	} else {
-		glog.V(4).Infof("Successfully sent %v timeserieses to GCM", len(req.TimeSeries))
+		klog.V(4).Infof("Successfully sent %v timeserieses to GCM", len(req.TimeSeries))
 	}
 }
 
 func (sink *gcmSink) ExportData(dataBatch *core.DataBatch) {
 	if err := sink.registerAllMetrics(); err != nil {
-		glog.Warningf("Error during metrics registration: %v", err)
+		klog.Warningf("Error during metrics registration: %v", err)
 		return
 	}
 
@@ -226,7 +226,7 @@ func (sink *gcmSink) register(metrics []core.Metric) error {
 		metricType := fullMetricType(metric.MetricDescriptor.Name)
 
 		if _, err := sink.gcmService.Projects.MetricDescriptors.Delete(metricName).Do(); err != nil {
-			glog.Infof("[GCM] Deleting metric %v failed: %v", metricName, err)
+			klog.Infof("[GCM] Deleting metric %v failed: %v", metricName, err)
 		}
 		labels := make([]*gcm.LabelDescriptor, 0)
 
@@ -288,7 +288,7 @@ func (sink *gcmSink) register(metrics []core.Metric) error {
 		}
 
 		if _, err := sink.gcmService.Projects.MetricDescriptors.Create(fullProjectName(sink.project), desc).Do(); err != nil {
-			glog.Errorf("Metric registration of %v failed: %v", desc.Name, err)
+			klog.Errorf("Metric registration of %v failed: %v", desc.Name, err)
 			return err
 		}
 	}
@@ -346,9 +346,9 @@ func CreateGCMSink(uri *url.URL) (core.DataSink, error) {
 		gcmService:   gcmService,
 		metricFilter: metricFilter,
 	}
-	glog.Infof("created GCM sink")
+	klog.Infof("created GCM sink")
 	if err := sink.registerAllMetrics(); err != nil {
-		glog.Warningf("Error during metrics registration: %v", err)
+		klog.Warningf("Error during metrics registration: %v", err)
 	}
 	return sink, nil
 }

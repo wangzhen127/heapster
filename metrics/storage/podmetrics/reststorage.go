@@ -15,10 +15,11 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
@@ -72,7 +73,7 @@ func (m *MetricStorage) NewList() runtime.Object {
 }
 
 // Lister interface
-func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
+func (m *MetricStorage) List(ctx context.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
 	labelSelector := labels.Everything()
 	if options != nil && options.LabelSelector != nil {
 		labelSelector = options.LabelSelector
@@ -81,7 +82,7 @@ func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainterna
 	pods, err := m.podLister.Pods(namespace).List(labelSelector)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while listing pods for selector %v: %v", labelSelector, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		return &metrics.PodMetricsList{}, errMsg
 	}
 
@@ -90,20 +91,20 @@ func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainterna
 		if podMetrics := m.getPodMetrics(pod); podMetrics != nil {
 			res.Items = append(res.Items, *podMetrics)
 		} else {
-			glog.Infof("No metrics for pod %s/%s", pod.Namespace, pod.Name)
+			klog.Infof("No metrics for pod %s/%s", pod.Namespace, pod.Name)
 		}
 	}
 	return &res, nil
 }
 
 // Getter interface
-func (m *MetricStorage) Get(ctx genericapirequest.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
+func (m *MetricStorage) Get(ctx context.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
 	namespace := genericapirequest.NamespaceValue(ctx)
 
 	pod, err := m.podLister.Pods(namespace).Get(name)
 	if err != nil {
 		errMsg := fmt.Errorf("Error while getting pod %v: %v", name, err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		return &metrics.PodMetrics{}, errMsg
 	}
 	if pod == nil {
@@ -137,7 +138,7 @@ func (m *MetricStorage) getPodMetrics(pod *v1.Pod) *metrics.PodMetrics {
 	for _, c := range pod.Spec.Containers {
 		ms, found := batch.MetricSets[core.PodContainerKey(pod.Namespace, pod.Name, c.Name)]
 		if !found {
-			glog.Infof("No metrics for container %s in pod %s/%s", c.Name, pod.Namespace, pod.Name)
+			klog.Infof("No metrics for container %s in pod %s/%s", c.Name, pod.Namespace, pod.Name)
 			return nil
 		}
 		usage, err := util.ParseResourceList(ms)
@@ -148,4 +149,8 @@ func (m *MetricStorage) getPodMetrics(pod *v1.Pod) *metrics.PodMetrics {
 	}
 
 	return res
+}
+
+func (m *MetricStorage) NamespaceScoped() bool {
+	return true
 }

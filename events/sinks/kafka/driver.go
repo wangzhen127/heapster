@@ -23,8 +23,8 @@ import (
 	kafka_common "github.com/Stackdriver/heapster/common/kafka"
 	event_core "github.com/Stackdriver/heapster/events/core"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
 	kube_api "k8s.io/api/core/v1"
+	"k8s.io/klog"
 )
 
 type KafkaSinkPoint struct {
@@ -74,12 +74,12 @@ func (sink *kafkaSink) ExportEvents(eventBatch *event_core.EventBatch) {
 	for _, event := range eventBatch.Events {
 		point, err := eventToPoint(event)
 		if err != nil {
-			glog.Warningf("Failed to convert event to point: %v", err)
+			klog.Warningf("Failed to convert event to point: %v", err)
 		}
 
 		err = sink.ProduceKafkaMessage(*point)
 		if err != nil {
-			glog.Errorf("Failed to produce event message: %s", err)
+			klog.Errorf("Failed to produce event message: %s", err)
 		}
 	}
 }

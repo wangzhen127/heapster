@@ -20,18 +20,15 @@ import (
 	"strings"
 
 	"github.com/Stackdriver/heapster/metrics/api/v1"
-	metricsApi "github.com/Stackdriver/heapster/metrics/apis/metrics"
 	"github.com/Stackdriver/heapster/metrics/core"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"github.com/Stackdriver/heapster/metrics/util/metrics"
 	restful "github.com/emicklei/go-restful"
-
-	v1listers "k8s.io/client-go/listers/core/v1"
 )
 
 const pprofBasePath = "/debug/pprof/"
 
-func setupHandlers(metricSink *metricsink.MetricSink, podLister v1listers.PodLister, nodeLister v1listers.NodeLister, historicalSource core.HistoricalSource, disableMetricExport bool) http.Handler {
+func setupHandlers(metricSink *metricsink.MetricSink, historicalSource core.HistoricalSource, disableMetricExport bool) http.Handler {
 
 	runningInKubernetes := true
 
@@ -41,9 +38,6 @@ func setupHandlers(metricSink *metricsink.MetricSink, podLister v1listers.PodLis
 	wsContainer.Router(restful.CurlyRouter{})
 	a := v1.NewApi(runningInKubernetes, metricSink, historicalSource, disableMetricExport)
 	a.Register(wsContainer)
-	// Metrics API
-	m := metricsApi.NewApi(metricSink, podLister, nodeLister)
-	m.Register(wsContainer)
 
 	handlePprofEndpoint := func(req *restful.Request, resp *restful.Response) {
 		name := strings.TrimPrefix(req.Request.URL.Path, pprofBasePath)

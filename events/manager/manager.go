@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/Stackdriver/heapster/events/core"
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"k8s.io/klog"
 )
 
 var (
@@ -99,6 +99,6 @@ func (rm *realManager) housekeep() {
 	// No parallelism. Assumes that the events are pushed to Heapster. Add parallelism
 	// when this stops to be true.
 	events := rm.source.GetNewEvents()
-	glog.V(0).Infof("Exporting %d events", len(events.Events))
+	klog.V(0).Infof("Exporting %d events", len(events.Events))
 	rm.sink.ExportEvents(events)
 }

@@ -17,7 +17,7 @@ package statsd
 import (
 	"bytes"
 	"fmt"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"net"
 )
 
@@ -37,21 +37,21 @@ func (client *statsdClientImpl) open() error {
 	var err error
 	client.conn, err = net.Dial("udp", client.host)
 	if err != nil {
-		glog.Errorf("Failed to open statsd client connection : %v", err)
+		klog.Errorf("Failed to open statsd client connection : %v", err)
 	} else {
-		glog.V(2).Infof("statsd client connection opened : %+v", client.conn)
+		klog.V(2).Infof("statsd client connection opened : %+v", client.conn)
 	}
 	return err
 }
 
 func (client *statsdClientImpl) close() error {
 	if client.conn == nil {
-		glog.Info("statsd client connection already closed")
+		klog.Info("statsd client connection already closed")
 		return nil
 	}
 	err := client.conn.Close()
 	client.conn = nil
-	glog.V(2).Infof("statsd client connection closed")
+	klog.V(2).Infof("statsd client connection closed")
 	return err
 }
 
@@ -90,6 +90,6 @@ func NewStatsdClient(host string, numMetricsPerMsg int) (client statsdClient, er
 	if numMetricsPerMsg <= 0 {
 		return nil, fmt.Errorf("numMetricsPerMsg should be a positive integer : %d", numMetricsPerMsg)
 	}
-	glog.V(2).Infof("statsd client created")
+	klog.V(2).Infof("statsd client created")
 	return &statsdClientImpl{host: host, numMetricsPerMsg: numMetricsPerMsg}, nil
 }

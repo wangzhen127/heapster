@@ -15,10 +15,11 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/core"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
@@ -30,7 +31,6 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	genericapirequest "k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/metrics/pkg/apis/metrics"
@@ -72,7 +72,7 @@ func (m *MetricStorage) NewList() runtime.Object {
 }
 
 // Lister interface
-func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
+func (m *MetricStorage) List(ctx context.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
 	labelSelector := labels.Everything()
 	if options != nil && options.LabelSelector != nil {
 		labelSelector = options.LabelSelector
@@ -85,7 +85,7 @@ func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainterna
 	})
 	if err != nil {
 		errMsg := fmt.Errorf("Error while listing nodes: %v", err)
-		glog.Error(errMsg)
+		klog.Error(errMsg)
 		return &metrics.NodeMetricsList{}, errMsg
 	}
 
@@ -99,7 +99,7 @@ func (m *MetricStorage) List(ctx genericapirequest.Context, options *metainterna
 }
 
 // Getter interface
-func (m *MetricStorage) Get(ctx genericapirequest.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
+func (m *MetricStorage) Get(ctx context.Context, name string, opts *metav1.GetOptions) (runtime.Object, error) {
 	// TODO: pay attention to get options
 	nodeMetrics := m.getNodeMetrics(name)
 	if nodeMetrics == nil {
@@ -133,4 +133,8 @@ func (m *MetricStorage) getNodeMetrics(node string) *metrics.NodeMetrics {
 		Window:    metav1.Duration{Duration: time.Minute},
 		Usage:     usage,
 	}
+}
+
+func (m *MetricStorage) NamespaceScoped() bool {
+	return false
 }

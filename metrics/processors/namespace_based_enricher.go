@@ -18,7 +18,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 
 	kube_config "github.com/Stackdriver/heapster/common/kubernetes"
 	"github.com/Stackdriver/heapster/metrics/core"
@@ -68,12 +68,12 @@ func (this *NamespaceBasedEnricher) addNamespaceInfo(metricSet *core.MetricSet) 
 		if ok {
 			metricSet.Labels[core.LabelPodNamespaceUID.Key] = string(namespace.UID)
 		} else {
-			glog.Errorf("Wrong namespace store content")
+			klog.Errorf("Wrong namespace store content")
 		}
 	} else if err != nil {
-		glog.Warningf("Failed to get namespace %s: %v", namespaceName, err)
+		klog.Warningf("Failed to get namespace %s: %v", namespaceName, err)
 	} else if !exists {
-		glog.Warningf("Namespace doesn't exist: %s", namespaceName)
+		klog.Warningf("Namespace doesn't exist: %s", namespaceName)
 	}
 }
 

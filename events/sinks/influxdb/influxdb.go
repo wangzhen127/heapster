@@ -27,8 +27,8 @@ import (
 	metrics_core "github.com/Stackdriver/heapster/metrics/core"
 	kube_api "k8s.io/api/core/v1"
 
-	"github.com/golang/glog"
 	influxdb "github.com/influxdata/influxdb/client"
+	"k8s.io/klog"
 )
 
 type influxdbSink struct {
@@ -52,7 +52,7 @@ const (
 )
 
 func (sink *influxdbSink) resetConnection() {
-	glog.Infof("Influxdb connection reset")
+	klog.Infof("Influxdb connection reset")
 	sink.dbExists = false
 	sink.client = nil
 }
@@ -129,7 +129,7 @@ func (sink *influxdbSink) ExportEvents(eventBatch *core.EventBatch) {
 			point, err = eventToPoint(event)
 		}
 		if err != nil {
-			glog.Warningf("Failed to convert event to point: %v", err)
+			klog.Warningf("Failed to convert event to point: %v", err)
 		}
 
 		point.Tags["cluster_name"] = sink.c.ClusterName
@@ -147,7 +147,7 @@ func (sink *influxdbSink) ExportEvents(eventBatch *core.EventBatch) {
 
 func (sink *influxdbSink) sendData(dataPoints []influxdb.Point) {
 	if err := sink.createDatabase(); err != nil {
-		glog.Errorf("Failed to create influxdb: %v", err)
+		klog.Errorf("Failed to create influxdb: %v", err)
 		return
 	}
 	bp := influxdb.BatchPoints{
@@ -158,16 +158,16 @@ func (sink *influxdbSink) sendData(dataPoints []influxdb.Point) {
 
 	start := time.Now()
 	if _, err := sink.client.Write(bp); err != nil {
-		glog.Errorf("InfluxDB write failed: %v", err)
+		klog.Errorf("InfluxDB write failed: %v", err)
 		if strings.Contains(err.Error(), dbNotFoundError) {
 			sink.resetConnection()
 		} else if _, _, err := sink.client.Ping(); err != nil {
-			glog.Errorf("InfluxDB ping failed: %v", err)
+			klog.Errorf("InfluxDB ping failed: %v", err)
 			sink.resetConnection()
 		}
 	}
 	end := time.Now()
-	glog.V(4).Infof("Exported %d data to influxDB in %s", len(dataPoints), end.Sub(start))
+	klog.V(4).Infof("Exported %d data to influxDB in %s", len(dataPoints), end.Sub(start))
 }
 
 func (sink *influxdbSink) Name() string {
@@ -206,7 +206,7 @@ func (sink *influxdbSink) createDatabase() error {
 	}
 
 	sink.dbExists = true
-	glog.Infof("Created database %q on influxDB server at %q", sink.c.DbName, sink.c.Host)
+	klog.Infof("Created database %q on influxDB server at %q", sink.c.DbName, sink.c.Host)
 	return nil
 }
 
@@ -222,7 +222,7 @@ func (sink *influxdbSink) createRetentionPolicy() error {
 		}
 	}
 
-	glog.Infof("Created database %q on influxDB server at %q", sink.c.DbName, sink.c.Host)
+	klog.Infof("Created database %q on influxDB server at %q", sink.c.DbName, sink.c.Host)
 	return nil
 }
 
@@ -230,7 +230,7 @@ func (sink *influxdbSink) createRetentionPolicy() error {
 func newSink(c influxdb_common.InfluxdbConfig) core.EventSink {
 	client, err := influxdb_common.NewClient(c)
 	if err != nil {
-		glog.Errorf("issues while creating an InfluxDB sink: %v, will retry on use", err)
+		klog.Errorf("issues while creating an InfluxDB sink: %v, will retry on use", err)
 	}
 	return &influxdbSink{
 		client: client, // can be nil
@@ -244,6 +244,6 @@ func CreateInfluxdbSink(uri *url.URL) (core.EventSink, error) {
 		return nil, err
 	}
 	sink := newSink(*config)
-	glog.Infof("created influxdb sink with options: host:%s user:%s db:%s", config.Host, config.User, config.DbName)
+	klog.Infof("created influxdb sink with options: host:%s user:%s db:%s", config.Host, config.User, config.DbName)
 	return sink, nil
 }

@@ -28,9 +28,9 @@ import (
 	"time"
 
 	kubelet_client "github.com/Stackdriver/heapster/metrics/sources/kubelet/util"
-	"github.com/golang/glog"
 	cadvisor "github.com/google/cadvisor/info/v1"
 	jsoniter "github.com/json-iterator/go"
+	"k8s.io/klog"
 	stats "k8s.io/kubernetes/pkg/kubelet/apis/stats/v1alpha1"
 )
 
@@ -89,7 +89,7 @@ func (self *KubeletClient) postRequestAndGetValue(client *http.Client, req *http
 	if req.URL != nil {
 		kubeletAddr = req.URL.Host
 	}
-	glog.V(10).Infof("Raw response from Kubelet at %s: %s", kubeletAddr, string(body))
+	klog.V(10).Infof("Raw response from Kubelet at %s: %s", kubeletAddr, string(body))
 
 	err = jsoniter.ConfigFastest.Unmarshal(body, value)
 	if err != nil {

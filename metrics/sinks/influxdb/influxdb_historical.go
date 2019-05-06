@@ -24,9 +24,9 @@ import (
 
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
 	influxdb "github.com/influxdata/influxdb/client"
 	influx_models "github.com/influxdata/influxdb/models"
+	"k8s.io/klog"
 )
 
 // Historical indicates that this sink supports being used as a HistoricalSource
@@ -231,7 +231,7 @@ func (sink *influxdbSink) parseRawQueryRow(rawRow influx_models.Row) ([]core.Tim
 		}
 
 		if err := tryParseMetricValue("value", rawVal, &val.MetricValue, 1, wasInt); err != nil {
-			glog.Errorf("Unable to parse field \"value\" in series %q: %v", rawRow.Name, err)
+			klog.Errorf("Unable to parse field \"value\" in series %q: %v", rawRow.Name, err)
 			return nil, fmt.Errorf("Unable to parse values in series %q", rawRow.Name)
 		}
 
@@ -402,7 +402,7 @@ func (sink *influxdbSink) parseAggregateQueryRow(rawRow influx_models.Row, aggre
 		// Count is always a uint64
 		if countIndex, ok := aggregationLookup[core.AggregationTypeCount]; ok {
 			if err := json.Unmarshal([]byte(rawVal[countIndex].(json.Number).String()), &val.Count); err != nil {
-				glog.Errorf("Unable to parse count value in series %q: %v", rawRow.Name, err)
+				klog.Errorf("Unable to parse count value in series %q: %v", rawRow.Name, err)
 				return nil, fmt.Errorf("Unable to parse values in series %q", rawRow.Name)
 			}
 		}
@@ -631,7 +631,7 @@ func (sink *influxdbSink) stringListQueryCol(q, colName string, errStr string) (
 	}
 
 	if colInd == -1 {
-		glog.Errorf("%s: results did not contain the %q column", errStr, core.LabelPodName.Key)
+		klog.Errorf("%s: results did not contain the %q column", errStr, core.LabelPodName.Key)
 		return nil, fmt.Errorf(errStr)
 	}
 
@@ -668,7 +668,7 @@ func (sink *influxdbSink) stringListQuery(q string, errStr string) ([]string, er
 func (sink *influxdbSink) runQuery(queryStr string) ([]influxdb.Result, error) {
 	// ensure we have a valid client handle before attempting to use it
 	if err := sink.ensureClient(); err != nil {
-		glog.Errorf("Unable to ensure InfluxDB client is present: %v", err)
+		klog.Errorf("Unable to ensure InfluxDB client is present: %v", err)
 		return nil, fmt.Errorf("unable to run query: unable to connect to database")
 	}
 
@@ -677,19 +677,19 @@ func (sink *influxdbSink) runQuery(queryStr string) ([]influxdb.Result, error) {
 		Database: sink.c.DbName,
 	}
 
-	glog.V(4).Infof("Executing query %q against database %q", q.Command, q.Database)
+	klog.V(4).Infof("Executing query %q against database %q", q.Command, q.Database)
 
 	resp, err := sink.client.Query(q)
 	if err != nil {
-		glog.Errorf("Unable to perform query %q against database %q: %v", q.Command, q.Database, err)
+		klog.Errorf("Unable to perform query %q against database %q: %v", q.Command, q.Database, err)
 		return nil, err
 	} else if resp.Error() != nil {
-		glog.Errorf("Unable to perform query %q against database %q: %v", q.Command, q.Database, resp.Error())
+		klog.Errorf("Unable to perform query %q against database %q: %v", q.Command, q.Database, resp.Error())
 		return nil, resp.Error()
 	}
 
 	if len(resp.Results) < 1 {
-		glog.Errorf("Unable to perform query %q against database %q: no results returned", q.Command, q.Database)
+		klog.Errorf("Unable to perform query %q against database %q: no results returned", q.Command, q.Database)
 		return nil, fmt.Errorf("No results returned")
 	}
 
@@ -700,7 +700,7 @@ func (sink *influxdbSink) runQuery(queryStr string) ([]influxdb.Result, error) {
 func populateAggregations(rawRowName string, rawVal []interface{}, val *core.TimestampedAggregationValue, aggregationLookup map[core.AggregationType]int, wasInt map[string]bool) error {
 	for _, aggregation := range core.MultiTypedAggregations {
 		if err := setAggregationValueIfPresent(aggregation, rawVal, &val.AggregationValue, aggregationLookup, wasInt); err != nil {
-			glog.Errorf("Unable to parse field %q in series %q: %v", aggregation, rawRowName, err)
+			klog.Errorf("Unable to parse field %q in series %q: %v", aggregation, rawRowName, err)
 			return fmt.Errorf("Unable to parse values in series %q", rawRowName)
 		}
 	}

@@ -41,7 +41,7 @@ func newAuthHandler(opt *options.HeapsterRunOptions, handler http.Handler) (http
 
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Check authn
-		user, ok, err := authn.AuthenticateRequest(req)
+		response, ok, err := authn.AuthenticateRequest(req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -52,7 +52,7 @@ func newAuthHandler(opt *options.HeapsterRunOptions, handler http.Handler) (http
 		}
 
 		// Check authz
-		allowed, err := authz.AuthorizeRequest(req, user)
+		allowed, err := authz.AuthorizeRequest(req, response.User)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

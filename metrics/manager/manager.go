@@ -19,8 +19,8 @@ import (
 
 	"github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"k8s.io/klog"
 )
 
 const (
@@ -109,7 +109,7 @@ func (rm *realManager) Housekeep() {
 
 func (rm *realManager) housekeep(start, end time.Time) {
 	if !start.Before(end) {
-		glog.Warningf("Wrong time provided to housekeep start:%s end: %s", start, end)
+		klog.Warningf("Wrong time provided to housekeep start:%s end: %s", start, end)
 		return
 	}
 
@@ -118,7 +118,7 @@ func (rm *realManager) housekeep(start, end time.Time) {
 		// ok, good to go
 
 	case <-time.After(rm.housekeepTimeout):
-		glog.Warningf("Spent too long waiting for housekeeping to start")
+		klog.Warningf("Spent too long waiting for housekeeping to start")
 		return
 	}
 
@@ -128,7 +128,7 @@ func (rm *realManager) housekeep(start, end time.Time) {
 		data, err := rm.source.ScrapeMetrics(start, end)
 
 		if err != nil {
-			glog.Errorf("Error in scraping metrics for %s: %v", rm.source.Name(), err)
+			klog.Errorf("Error in scraping metrics for %s: %v", rm.source.Name(), err)
 			return
 		}
 
@@ -137,7 +137,7 @@ func (rm *realManager) housekeep(start, end time.Time) {
 			if err == nil {
 				data = newData
 			} else {
-				glog.Errorf("Error in processor: %v", err)
+				klog.Errorf("Error in processor: %v", err)
 				return
 			}
 		}

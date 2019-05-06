@@ -16,7 +16,7 @@ package processors
 
 import (
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 // Does not add any nodes.
@@ -36,17 +36,17 @@ func (this *NodeAggregator) Process(batch *core.DataBatch) (*core.DataBatch, err
 		// Aggregating pods
 		nodeName, found := metricSet.Labels[core.LabelNodename.Key]
 		if nodeName == "" {
-			glog.V(8).Infof("Skipping pod %s: no node info", key)
+			klog.V(8).Infof("Skipping pod %s: no node info", key)
 			continue
 		}
 		if !found {
-			glog.Errorf("No node info in pod %s: %v", key, metricSet.Labels)
+			klog.Errorf("No node info in pod %s: %v", key, metricSet.Labels)
 			continue
 		}
 		nodeKey := core.NodeKey(nodeName)
 		node, found := batch.MetricSets[nodeKey]
 		if !found {
-			glog.V(1).Infof("No metric for node %s, cannot perform node level aggregation.", nodeKey)
+			klog.V(1).Infof("No metric for node %s, cannot perform node level aggregation.", nodeKey)
 		} else if err := aggregate(metricSet, node, this.MetricsToAggregate); err != nil {
 			return nil, err
 		}

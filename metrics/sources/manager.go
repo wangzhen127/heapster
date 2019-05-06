@@ -20,8 +20,8 @@ import (
 
 	. "github.com/Stackdriver/heapster/metrics/core"
 
-	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"k8s.io/klog"
 )
 
 const (
@@ -76,7 +76,7 @@ func (this *sourceManager) Name() string {
 }
 
 func (this *sourceManager) ScrapeMetrics(start, end time.Time) (*DataBatch, error) {
-	glog.V(1).Infof("Scraping metrics start: %s, end: %s", start, end)
+	klog.V(1).Infof("Scraping metrics start: %s, end: %s", start, end)
 	sources := this.metricsSourceProvider.GetMetricsSources()
 
 	responseChannel := make(chan *DataBatch)
@@ -95,16 +95,16 @@ func (this *sourceManager) ScrapeMetrics(start, end time.Time) (*DataBatch, erro
 			// Prevents network congestion.
 			time.Sleep(time.Duration(rand.Intn(delayMs)) * time.Millisecond)
 
-			glog.V(2).Infof("Querying source: %s", source)
+			klog.V(2).Infof("Querying source: %s", source)
 			metrics, err := scrape(source, start, end)
 			if err != nil {
-				glog.Errorf("Error in scraping containers from %s: %v", source.Name(), err)
+				klog.Errorf("Error in scraping containers from %s: %v", source.Name(), err)
 				return
 			}
 
 			now := time.Now()
 			if !now.Before(timeoutTime) {
-				glog.Warningf("Failed to get %s response in time", source)
+				klog.Warningf("Failed to get %s response in time", source)
 				return
 			}
 			timeForResponse := timeoutTime.Sub(now)
@@ -114,7 +114,7 @@ func (this *sourceManager) ScrapeMetrics(start, end time.Time) (*DataBatch, erro
 				// passed the response correctly.
 				return
 			case <-time.After(timeForResponse):
-				glog.Warningf("Failed to send the response back %s", source)
+				klog.Warningf("Failed to send the response back %s", source)
 				return
 			}
 		}(source, responseChannel, start, end, timeoutTime, delayMs)
@@ -130,7 +130,7 @@ responseloop:
 	for i := range sources {
 		now := time.Now()
 		if !now.Before(timeoutTime) {
-			glog.Warningf("Failed to get all responses in time (got %d/%d)", i, len(sources))
+			klog.Warningf("Failed to get all responses in time (got %d/%d)", i, len(sources))
 			break
 		}
 
@@ -149,14 +149,14 @@ responseloop:
 			latencies[bucket]++
 
 		case <-time.After(timeoutTime.Sub(now)):
-			glog.Warningf("Failed to get all responses in time (got %d/%d)", i, len(sources))
+			klog.Warningf("Failed to get all responses in time (got %d/%d)", i, len(sources))
 			break responseloop
 		}
 	}
 
-	glog.V(1).Infof("ScrapeMetrics: time: %s size: %d", time.Since(startTime), len(response.MetricSets))
+	klog.V(1).Infof("ScrapeMetrics: time: %s size: %d", time.Since(startTime), len(response.MetricSets))
 	for i, value := range latencies {
-		glog.V(1).Infof("   scrape  bucket %d: %d", i, value)
+		klog.V(1).Infof("   scrape  bucket %d: %d", i, value)
 	}
 	return &response, nil
 }

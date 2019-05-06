@@ -15,6 +15,7 @@
 package client
 
 import (
+	"net"
 	"net/http"
 	"time"
 
@@ -22,6 +23,8 @@ import (
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/transport"
 )
+
+type DialFunc func(net, addr string) (net.Conn, error)
 
 type KubeletClientConfig struct {
 	// Default port - used if no information about Kubelet port can be found in Node.NodeStatus.DaemonEndpoints.
@@ -42,7 +45,7 @@ type KubeletClientConfig struct {
 	HTTPTimeout time.Duration
 
 	// Dial is a custom dialer used for the client
-	Dial utilnet.DialFunc
+	Dial DialFunc
 }
 
 func MakeTransport(config *KubeletClientConfig) (http.RoundTripper, error) {

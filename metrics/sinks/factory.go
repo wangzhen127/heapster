@@ -20,7 +20,6 @@ import (
 
 	"github.com/Stackdriver/heapster/common/flags"
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/Stackdriver/heapster/metrics/sinks/elasticsearch"
 	"github.com/Stackdriver/heapster/metrics/sinks/gcm"
 	"github.com/Stackdriver/heapster/metrics/sinks/graphite"
 	"github.com/Stackdriver/heapster/metrics/sinks/hawkular"
@@ -31,11 +30,10 @@ import (
 	logsink "github.com/Stackdriver/heapster/metrics/sinks/log"
 	metricsink "github.com/Stackdriver/heapster/metrics/sinks/metric"
 	"github.com/Stackdriver/heapster/metrics/sinks/opentsdb"
-	"github.com/Stackdriver/heapster/metrics/sinks/riemann"
 	"github.com/Stackdriver/heapster/metrics/sinks/stackdriver"
 	"github.com/Stackdriver/heapster/metrics/sinks/statsd"
 	"github.com/Stackdriver/heapster/metrics/sinks/wavefront"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type SinkFactory struct {
@@ -43,8 +41,6 @@ type SinkFactory struct {
 
 func (this *SinkFactory) Build(uri flags.Uri) (core.DataSink, error) {
 	switch uri.Key {
-	case "elasticsearch":
-		return elasticsearch.NewElasticSearchSink(&uri.Val)
 	case "gcm":
 		return gcm.CreateGCMSink(&uri.Val)
 	case "stackdriver":
@@ -71,8 +67,6 @@ func (this *SinkFactory) Build(uri flags.Uri) (core.DataSink, error) {
 		return opentsdb.CreateOpenTSDBSink(&uri.Val)
 	case "wavefront":
 		return wavefront.NewWavefrontSink(&uri.Val)
-	case "riemann":
-		return riemann.CreateRiemannSink(&uri.Val)
 	case "honeycomb":
 		return honeycomb.NewHoneycombSink(&uri.Val)
 	default:
@@ -87,7 +81,7 @@ func (this *SinkFactory) BuildAll(uris flags.Uris, historicalUri string, disable
 	for _, uri := range uris {
 		sink, err := this.Build(uri)
 		if err != nil {
-			glog.Errorf("Failed to create %v sink: %v", uri, err)
+			klog.Errorf("Failed to create %v sink: %v", uri, err)
 			continue
 		}
 		if uri.Key == "metric" {
@@ -97,14 +91,14 @@ func (this *SinkFactory) BuildAll(uris flags.Uris, historicalUri string, disable
 			if asHistSource, ok := sink.(core.AsHistoricalSource); ok {
 				historical = asHistSource.Historical()
 			} else {
-				glog.Errorf("Sink type %q does not support being used for historical access", uri.Key)
+				klog.Errorf("Sink type %q does not support being used for historical access", uri.Key)
 			}
 		}
 		result = append(result, sink)
 	}
 
 	if len([]flags.Uri(uris)) != 0 && len(result) == 0 {
-		glog.Fatal("No available sink to use")
+		klog.Fatal("No available sink to use")
 	}
 
 	if metric == nil && !disableMetricSink {
@@ -115,11 +109,11 @@ func (this *SinkFactory) BuildAll(uris flags.Uris, historicalUri string, disable
 			result = append(result, sink)
 			metric = sink.(*metricsink.MetricSink)
 		} else {
-			glog.Errorf("Error while creating metric sink: %v", err)
+			klog.Errorf("Error while creating metric sink: %v", err)
 		}
 	}
 	if len(historicalUri) > 0 && historical == nil {
-		glog.Errorf("Error while initializing historical access: unable to use sink %q as a historical source", historicalUri)
+		klog.Errorf("Error while initializing historical access: unable to use sink %q as a historical source", historicalUri)
 	}
 	return metric, result, historical
 }

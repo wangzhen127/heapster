@@ -15,7 +15,7 @@
 package statsd
 
 import (
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type dummyStatsdClientImpl struct {
@@ -23,12 +23,12 @@ type dummyStatsdClientImpl struct {
 }
 
 func (client *dummyStatsdClientImpl) open() error {
-	glog.V(2).Infof("dummy statsd client open() called, doing nothing")
+	klog.V(2).Infof("dummy statsd client open() called, doing nothing")
 	return nil
 }
 
 func (client *dummyStatsdClientImpl) close() error {
-	glog.V(2).Infof("dummy statsd client close() called, doing nothing")
+	klog.V(2).Infof("dummy statsd client close() called, doing nothing")
 	return nil
 }
 

@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/Stackdriver/heapster/events/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type LogSink struct {
@@ -43,7 +43,7 @@ func batchToString(batch *core.EventBatch) string {
 }
 
 func (this *LogSink) ExportEvents(batch *core.EventBatch) {
-	glog.Info(batchToString(batch))
+	klog.Info(batchToString(batch))
 }
 
 func CreateLogSink() (*LogSink, error) {

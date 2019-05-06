@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/klog"
 
 	"github.com/Stackdriver/heapster/metrics/cmd/heapster-apiserver/app"
 	"github.com/Stackdriver/heapster/metrics/options"
@@ -67,7 +67,6 @@ func TestRunSecureServer(t *testing.T) {
 	if err := waitForApiserverUp(serverIP); err != nil {
 		t.Fatalf("%v", err)
 	}
-	testSwaggerSpec(t, serverIP)
 	testAPIGroupList(t, serverIP)
 	testAPIGroup(t, serverIP)
 	testAPIResourceList(t, serverIP)
@@ -80,7 +79,7 @@ func getServerOptions() *options.HeapsterRunOptions {
 
 func waitForApiserverUp(serverIP string) error {
 	for start := time.Now(); time.Since(start) < time.Minute; time.Sleep(5 * time.Second) {
-		glog.Errorf("Waiting for : %#v", serverIP)
+		klog.Errorf("Waiting for : %#v", serverIP)
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
@@ -100,11 +99,11 @@ func readResponse(serverURL string) ([]byte, error) {
 	client := &http.Client{Transport: tr}
 	response, err := client.Get(serverURL)
 	if err != nil {
-		glog.Errorf("http get err code : %#v", err)
+		klog.Errorf("http get err code : %#v", err)
 		return nil, fmt.Errorf("Error in fetching %s: %v", serverURL, err)
 	}
 	defer response.Body.Close()
-	glog.Errorf("http get response code : %#v", response.StatusCode)
+	klog.Errorf("http get response code : %#v", response.StatusCode)
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status: %d for URL: %s, expected status: %d", response.StatusCode, serverURL, http.StatusOK)
 	}
@@ -113,14 +112,6 @@ func readResponse(serverURL string) ([]byte, error) {
 		return nil, fmt.Errorf("Error reading response from %s: %v", serverURL, err)
 	}
 	return contents, nil
-}
-
-func testSwaggerSpec(t *testing.T, serverIP string) {
-	serverURL := serverIP + "/swaggerapi"
-	_, err := readResponse(serverURL)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
 }
 
 func testAPIGroupList(t *testing.T, serverIP string) {

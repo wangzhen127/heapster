@@ -19,20 +19,20 @@ package kafka
 // * https://github.com/Shopify/sarama/blob/master/sarama.go
 
 import (
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type GologAdapterLogger struct {
 }
 
 func (GologAdapterLogger) Print(v ...interface{}) {
-	glog.Info(v...)
+	klog.Info(v...)
 }
 
 func (GologAdapterLogger) Printf(format string, args ...interface{}) {
-	glog.Infof(format, args...)
+	klog.Infof(format, args...)
 }
 
 func (GologAdapterLogger) Println(v ...interface{}) {
-	glog.Infoln(v...)
+	klog.Infoln(v...)
 }

@@ -16,7 +16,7 @@ package processors
 
 import (
 	"github.com/Stackdriver/heapster/metrics/core"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type NamespaceAggregator struct {
@@ -36,7 +36,7 @@ func (this *NamespaceAggregator) Process(batch *core.DataBatch) (*core.DataBatch
 
 		namespaceName, found := metricSet.Labels[core.LabelNamespaceName.Key]
 		if !found {
-			glog.Errorf("No namespace info in pod %s: %v", key, metricSet.Labels)
+			klog.Errorf("No namespace info in pod %s: %v", key, metricSet.Labels)
 			continue
 		}
 

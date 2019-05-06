@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"time"
 	"sort"
+	"time"
 
 	pb "github.com/golang/protobuf/proto"
 	"github.com/riemann/riemann-go-client/proto"
@@ -16,13 +16,14 @@ func EventToProtocolBuffer(event *Event) (*proto.Event, error) {
 	if event.Host == "" {
 		event.Host, _ = os.Hostname()
 	}
-	if event.Time == 0 {
-		event.Time = time.Now().Unix()
+	if event.Time.IsZero() {
+		event.Time = time.Now()
 	}
 
 	var e proto.Event
 	e.Host = pb.String(event.Host)
-	e.Time = pb.Int64(event.Time)
+	e.Time = pb.Int64(event.Time.Unix())
+	e.TimeMicros = pb.Int64(event.Time.UnixNano() / int64(time.Microsecond))
 	if event.Service != "" {
 		e.Service = pb.String(event.Service)
 	}
@@ -53,16 +54,20 @@ func EventToProtocolBuffer(event *Event) (*proto.Event, error) {
 		e.Ttl = pb.Float32(event.Ttl)
 	}
 
-	switch reflect.TypeOf(event.Metric).Kind() {
-	case reflect.Int, reflect.Int32, reflect.Int64:
-		e.MetricSint64 = pb.Int64((reflect.ValueOf(event.Metric).Int()))
-	case reflect.Float32:
-		e.MetricD = pb.Float64((reflect.ValueOf(event.Metric).Float()))
-	case reflect.Float64:
-		e.MetricD = pb.Float64((reflect.ValueOf(event.Metric).Float()))
-	default:
-		return nil, fmt.Errorf("Metric of invalid type (type %v)",
-			reflect.TypeOf(event.Metric).Kind())
+	if event.Metric != nil {
+		switch reflect.TypeOf(event.Metric).Kind() {
+		case reflect.Int, reflect.Int32, reflect.Int64:
+			e.MetricSint64 = pb.Int64(reflect.ValueOf(event.Metric).Int())
+		case reflect.Float32:
+			e.MetricD = pb.Float64(reflect.ValueOf(event.Metric).Float())
+		case reflect.Float64:
+			e.MetricD = pb.Float64(reflect.ValueOf(event.Metric).Float())
+		case reflect.Uint, reflect.Uint32, reflect.Uint64:
+			e.MetricSint64 = pb.Int64(int64(reflect.ValueOf(event.Metric).Uint()))
+		default:
+			return nil, fmt.Errorf("Metric of invalid type (type %v)",
+				reflect.TypeOf(event.Metric).Kind())
+		}
 	}
 	return &e, nil
 }
@@ -77,8 +82,12 @@ func ProtocolBuffersToEvents(pbEvents []*proto.Event) []Event {
 			Host:        event.GetHost(),
 			Description: event.GetDescription(),
 			Ttl:         event.GetTtl(),
-			Time:        event.GetTime(),
 			Tags:        event.GetTags(),
+		}
+		if event.TimeMicros != nil {
+			e.Time = time.Unix(0, event.GetTimeMicros()*int64(time.Microsecond))
+		} else if event.Time != nil {
+			e.Time = time.Unix(event.GetTime(), 0)
 		}
 		if event.MetricF != nil {
 			e.Metric = event.GetMetricF()
