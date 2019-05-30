@@ -41,7 +41,9 @@ var StandardMetrics = []Metric{
 	MetricNetworkRx,
 	MetricNetworkRxErrors,
 	MetricNetworkTx,
-	MetricNetworkTxErrors}
+	MetricNetworkTxErrors,
+	MetricRlimitMaxPID,
+	MetricRlimitNumOfRunningProcesses}
 
 // Metrics computed based on cluster state using Kubernetes API.
 var AdditionalMetrics = []Metric{
@@ -149,6 +151,10 @@ var NetworkMetrics = []Metric{
 	MetricNetworkTxErrorsRate,
 	MetricNetworkTxRate,
 }
+var RlimitMetrics = []Metric{
+	MetricRlimitMaxPID,
+	MetricRlimitNumOfRunningProcesses,
+}
 
 // Maps from resource name to the metric that tracks container resource request
 // on that resource. The name of the metric is ResourceName/request where ResourceName
@@ -166,6 +172,7 @@ const (
 	MetricFamilyFilesystem              = "filesystem"
 	MetricFamilyMemory                  = "memory"
 	MetricFamilyNetwork                 = "network"
+	MetricFamilyRlimit                  = "rlimit"
 	MetricFamilyGeneral                 = "general"
 )
 
@@ -174,6 +181,7 @@ var MetricFamilies = map[MetricFamily][]Metric{
 	MetricFamilyFilesystem: FilesystemMetrics,
 	MetricFamilyMemory:     MemoryMetrics,
 	MetricFamilyNetwork:    NetworkMetrics,
+	MetricFamilyRlimit:     RlimitMetrics,
 }
 
 func MetricFamilyForName(metricName string) MetricFamily {
@@ -474,6 +482,26 @@ var MetricNetworkTxErrors = Metric{
 			MetricType: MetricCumulative,
 			IntValue:   int64(txErrors),
 		}
+	},
+}
+
+var MetricRlimitMaxPID = Metric{
+	MetricDescriptor: MetricDescriptor{
+		Name:        "rlimit/max_pid",
+		Description: "The max PID of OS",
+		Type:        MetricGauge,
+		ValueType:   ValueInt64,
+		Units:       UnitsCount,
+	},
+}
+
+var MetricRlimitNumOfRunningProcesses = Metric{
+	MetricDescriptor: MetricDescriptor{
+		Name:        "rlimit/num_of_running_processes",
+		Description: "The number of running processes in the OS",
+		Type:        MetricGauge,
+		ValueType:   ValueInt64,
+		Units:       UnitsCount,
 	},
 }
 

@@ -162,6 +162,7 @@ func (this *summaryMetricsSource) decodeNodeStats(metrics map[string]*MetricSet,
 	this.decodeNetworkStats(nodeMetrics, node.Network)
 	this.decodeFsStats(nodeMetrics, RootFsKey, node.Fs)
 	this.decodeEphemeralStorageStats(nodeMetrics, node.Fs)
+	this.decodeRlimitStats(nodeMetrics, node.Rlimit)
 	metrics[NodeKey(node.NodeName)] = nodeMetrics
 
 	for _, container := range node.SystemContainers {
@@ -338,6 +339,24 @@ func (this *summaryMetricsSource) decodeFsStats(metrics *MetricSet, fsKey string
 	this.addLabeledIntMetric(metrics, &MetricFilesystemAvailable, fsLabels, fs.AvailableBytes)
 	this.addLabeledIntMetric(metrics, &MetricFilesystemInodes, fsLabels, fs.Inodes)
 	this.addLabeledIntMetric(metrics, &MetricFilesystemInodesFree, fsLabels, fs.InodesFree)
+}
+
+func (this *summaryMetricsSource) decodeRlimitStats(metrics *MetricSet, rlimit *stats.RlimitStats) {
+	if rlimit == nil {
+		klog.V(9).Infof("missing rlimit metrics!")
+		return
+	}
+
+	var maxPID, numOfRunningProcesses uint64 = 0, 0
+	if *rlimit.MaxPID > 0 {
+		maxPID = uint64(*rlimit.MaxPID)
+	}
+	if *rlimit.NumOfRunningProcesses > 0 {
+		numOfRunningProcesses = uint64(*rlimit.NumOfRunningProcesses)
+	}
+
+	this.addIntMetric(metrics, &MetricRlimitMaxPID, &maxPID)
+	this.addIntMetric(metrics, &MetricRlimitNumOfRunningProcesses, &numOfRunningProcesses)
 }
 
 func (this *summaryMetricsSource) decodeUserDefinedMetrics(metrics *MetricSet, udm []stats.UserDefinedMetric) {

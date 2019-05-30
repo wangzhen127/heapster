@@ -623,6 +623,12 @@ func (sink *StackdriverSink) LegacyTranslateMetric(timestamp time.Time, labels m
 			"fault_type": "minor",
 		}
 		return ts
+	case core.MetricRlimitMaxPID.MetricDescriptor.Name:
+		point := sink.intPoint(timestamp, timestamp, value.IntValue)
+		return legacyCreateTimeSeries(resourceLabels, legacyPidLimitMD, point)
+	case core.MetricRlimitNumOfRunningProcesses.MetricDescriptor.Name:
+		point := sink.intPoint(timestamp, timestamp, value.IntValue)
+		return legacyCreateTimeSeries(resourceLabels, legacyPidUsedMD, point)
 	}
 	return nil
 }
@@ -812,7 +818,12 @@ func (sink *StackdriverSink) TranslateMetric(timestamp time.Time, labels map[str
 		case core.MetricNodeEphemeralStorageCapacity.MetricDescriptor.Name:
 			point := sink.intPoint(timestamp, timestamp, value.IntValue)
 			return createTimeSeries("k8s_node", nodeLabels, ephemeralstorageTotalBytesMD, point)
-
+		case core.MetricRlimitMaxPID.MetricDescriptor.Name:
+			point := sink.intPoint(timestamp, timestamp, value.IntValue)
+			return createTimeSeries("k8s_node", nodeLabels, pidLimitMD, point)
+		case core.MetricRlimitNumOfRunningProcesses.MetricDescriptor.Name:
+			point := sink.intPoint(timestamp, timestamp, value.IntValue)
+			return createTimeSeries("k8s_node", nodeLabels, pidUsedMD, point)
 		}
 	case core.MetricSetTypeSystemContainer:
 		nodeLabels := sink.getNodeResourceLabels(labels)

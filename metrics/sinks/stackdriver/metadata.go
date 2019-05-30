@@ -229,6 +229,18 @@ var (
 		Name:       "kubernetes.io/node_daemon/memory/used_bytes",
 	}
 
+	pidLimitMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/pid_limit",
+	}
+
+	pidUsedMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "kubernetes.io/node/pid_used",
+	}
+
 	// Old resource model metrics
 
 	legacyUptimeMD = &metricMetadata{
@@ -325,5 +337,17 @@ var (
 		MetricKind: google_api5.MetricDescriptor_GAUGE,
 		ValueType:  google_api5.MetricDescriptor_INT64,
 		Name:       "container.googleapis.com/container/accelerator/request",
+	}
+
+	legacyPidLimitMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "container.googleapis.com/container/pid_limit",
+	}
+
+	legacyPidUsedMD = &metricMetadata{
+		MetricKind: google_api5.MetricDescriptor_GAUGE,
+		ValueType:  google_api5.MetricDescriptor_INT64,
+		Name:       "container.googleapis.com/container/pid_used",
 	}
 )
